@@ -14,7 +14,7 @@
     "@clerk/nextjs": "^6.34.0",
     "@prisma/client": "^6.18.0",
     "axios": "^1.11.0",
-    "cloudinary": "^2.7.0",
+    "cloudinary": "^2.8.0",
     "daisyui": "^5.0.50",
     "dayjs": "^1.11.13",
     "filesize": "^11.0.2",
