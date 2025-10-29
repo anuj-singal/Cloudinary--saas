@@ -231,7 +231,7 @@ export default function SocialShare() {
                                             </div>
                                         </div>
                                     )}
-                                    <CldImage
+                                    <CldImage    //*******responsible for image size change******
                                         width={socialFormats[selectedFormat].width}
                                         height={socialFormats[selectedFormat].height}
                                         src={uploadedImage}
