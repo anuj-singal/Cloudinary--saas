@@ -81,7 +81,8 @@ export async function POST(request: NextRequest) {
                 publicId: result.public_id,
                 originalSize,
                 compressedSize: String(result.bytes),
-                duration: result.duration || 0
+                duration: result.duration || 0,
+                userId
             }
         })
 
