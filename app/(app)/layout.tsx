@@ -13,6 +13,8 @@ import {
   SunIcon,
   MoonIcon,
   XIcon,
+  ImagePlus,
+  Recycle,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -20,7 +22,8 @@ const sidebarItems = [
   { href: "/home", icon: LayoutDashboardIcon, label: "Home Page" },
   { href: "/social-share", icon: Share2Icon, label: "Social Share" },
   { href: "/video-upload", icon: UploadIcon, label: "Video Upload" },
-  { href: "/image-filters", icon: UploadIcon, label: "Image Filters" },
+  { href: "/image-filters", icon: ImagePlus, label: "Image Filter" },
+  { href: "/format-convert", icon: Recycle, label: "Convert Format" },
 ];
 
 export default function AppLayout({
