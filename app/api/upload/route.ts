@@ -1,57 +1,76 @@
-import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 import { auth } from "@clerk/nextjs/server";
-import { v2 as cloudinary } from "cloudinary";
+import { NextResponse } from "next/server";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+import { Readable } from "stream";
 
+// Initialize Prisma
+const prisma = new PrismaClient();
+
+// Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
 });
 
-interface CloudinaryUploadResult {
-  public_id: string;
-  secure_url: string;
-  format: string;
-  resource_type: string;
-  [key: string]: unknown;
+// Helper: convert buffer to readable stream
+function bufferToStream(buffer: Buffer) {
+  const stream = new Readable();
+  stream.push(buffer);
+  stream.push(null);
+  return stream;
 }
 
-export async function POST(request: NextRequest) {
-  const { userId } = await auth();
-
+export async function POST(req: Request) {
+  // Get authenticated user
+  const session = auth();
+  const userId = (await session).userId as string;
   if (!userId) {
-    return NextResponse.json({ error: "User is not logged in" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const data = await req.formData();
+  const file = data.get("file") as File;
+
+  if (!file) {
+    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
   try {
-    const formData = await request.formData();
-    const file = formData.get("file") as File | null;
+    // Convert File -> Buffer -> Stream
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const stream = bufferToStream(buffer);
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-    }
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const result = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
+    // Upload to Cloudinary using upload_stream
+    const result: UploadApiResponse = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: "next-cloudinary-uploads" },
+        { resource_type: "video", folder: "videos" },
         (error, result) => {
           if (error) reject(error);
-          else resolve(result as CloudinaryUploadResult);
+          else resolve(result!);
         }
       );
-      uploadStream.end(buffer);
+      stream.pipe(uploadStream);
     });
 
-    return NextResponse.json(
-      { publicId: result.public_id, url: result.secure_url },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Upload image failed:", error);
-    return NextResponse.json({ error: "Upload image failed" }, { status: 500 });
+    // Save to Prisma
+    const video = await prisma.video.create({
+      data: {
+        title: file.name,
+        description: null,
+        publicId: result.public_id,
+        originalSize: String(file.size),
+        compressedSize: String(result.bytes),
+        duration: result.duration || 0,
+        userId,
+      },
+    });
+
+    return NextResponse.json(video);
+  } catch (err) {
+    console.error("Video upload error:", err);
+    return NextResponse.json({ error: "Video upload failed" }, { status: 500 });
   }
 }

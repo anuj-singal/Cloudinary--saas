@@ -15,6 +15,8 @@ import {
   XIcon,
   ImagePlus,
   Recycle,
+  Droplet,
+  ScissorsLineDashed,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -24,6 +26,8 @@ const sidebarItems = [
   { href: "/video-upload", icon: UploadIcon, label: "Video Upload" },
   { href: "/image-filters", icon: ImagePlus, label: "Image Filter" },
   { href: "/format-convert", icon: Recycle, label: "Convert Format" },
+  { href: "/watermark", icon: Droplet, label: "Watermark" },
+  { href: "/video-trim", icon: ScissorsLineDashed, label: "Video Trim/crop" },
 ];
 
 export default function AppLayout({
