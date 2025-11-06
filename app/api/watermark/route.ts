@@ -1,70 +1,73 @@
 import { NextRequest, NextResponse } from "next/server";
+import { v2 as cloudinary } from "cloudinary";
 import { auth } from "@clerk/nextjs/server";
-import cloudinary from "@/lib/cloudinary";
 
-export async function POST(request: NextRequest) {
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+  secure: true,
+});
+
+export async function POST(req: NextRequest) {
   const { userId } = await auth();
-
-  if (!userId) {
-    return NextResponse.json({ error: "User is not logged in" }, { status: 401 });
-  }
+  if (!userId)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const formData = await request.formData();
-    const file = formData.get("file") as File | null;
-    const watermarkType = formData.get("type") as "text" | "logo" | null;
-    const text = formData.get("text") as string | null;
-    const logoId = formData.get("logoId") as string | null;
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
+    const text = formData.get("text") as string;
+    const color = formData.get("color") as string;
+    const fontSize = parseInt(formData.get("fontSize") as string);
+    const position = formData.get("position") as string;
 
     if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Step 1: Upload original image to Cloudinary
-    const uploaded = await new Promise<any>((resolve, reject) => {
+    // Upload original image
+    const uploaded: any = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: "uploads" },
-        (error, result) => (error ? reject(error) : resolve(result))
+        (err, result) => (err ? reject(err) : resolve(result))
       );
       uploadStream.end(buffer);
     });
 
-    // Step 2: Prepare watermark transformation
-    let transformation: any[] = [];
-    if (watermarkType === "logo" && logoId) {
-      transformation.push({
-        overlay: logoId,
-        width: 150,
-        gravity: "south_east",
-        x: 20,
-        y: 20,
-      });
-    } else if (watermarkType === "text" && text) {
-      transformation.push({
-        overlay: { text, font_family: "Arial", font_size: 40, font_weight: "bold", color: "white" },
-        gravity: "south_east",
-        x: 20,
-        y: 20,
-      });
-    }
+    // Map position to Cloudinary gravity
+    const gravityMap: Record<string, string> = {
+      "top-left": "north_west",
+      "top-right": "north_east",
+      "bottom-left": "south_west",
+      "bottom-right": "south_east",
+      center: "center",
+    };
 
-    // Step 3: Apply watermark and save as new Cloudinary asset
-    let watermarked: any = uploaded;
-    if (transformation.length) {
-      const publicId = `watermarked/${uploaded.public_id}`;
-      watermarked = await cloudinary.uploader.upload(uploaded.secure_url, {
-        public_id: publicId,
-        transformation,
-      });
-    }
+    const watermarkedUrl = cloudinary.url(uploaded.public_id, {
+      transformation: [
+        {
+          overlay: {
+            font_family: "Arial",
+            font_size: fontSize,
+            font_weight: "bold",
+            text,
+            color,
+          },
+          gravity: gravityMap[position] || "south_east",
+          x: 20,
+          y: 20,
+        },
+      ],
+    });
 
     return NextResponse.json({
-      original: { publicId: uploaded.public_id, url: uploaded.secure_url },
-      watermarked: { publicId: watermarked.public_id, url: watermarked.secure_url },
+      original: uploaded.secure_url,
+      watermarked: watermarkedUrl,
     });
-  } catch (error: any) {
-    console.error("Upload + Watermark failed:", error);
-    return NextResponse.json({ error: "Upload + Watermark failed" }, { status: 500 });
+  } catch (error) {
+    console.error("Watermark failed:", error);
+    return NextResponse.json({ error: "Watermark failed" }, { status: 500 });
   }
 }

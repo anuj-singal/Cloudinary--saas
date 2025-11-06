@@ -4,37 +4,35 @@ import { useState } from "react";
 
 export default function WatermarkPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [watermarkType, setWatermarkType] = useState<"text" | "logo">("text");
   const [text, setText] = useState("MyBrand");
-  const [logoId, setLogoId] = useState("your_logo_public_id");
+  const [color, setColor] = useState("#ffffff");
+  const [fontSize, setFontSize] = useState(40);
+  const [position, setPosition] = useState("bottom-right");
   const [result, setResult] = useState<{ original: string; watermarked: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async () => {
-    if (!file) return alert("Please select a file");
+    if (!file) return alert("Please select an image");
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("type", watermarkType);
-    if (watermarkType === "text") formData.append("text", text);
-    if (watermarkType === "logo") formData.append("logoId", logoId);
+    formData.append("text", text);
+    formData.append("color", color);
+    formData.append("fontSize", fontSize.toString());
+    formData.append("position", position);
 
     setLoading(true);
     setResult(null);
 
     try {
-      const res = await fetch(`${window.location.origin}/upload`, {
+      const res = await fetch("/api/watermark", {
         method: "POST",
         body: formData,
       });
-
       const data = await res.json();
-      if (data.watermarked) {
-        setResult({
-          original: data.original.url,
-          watermarked: data.watermarked.url,
-        });
-      } else alert(data.error || "Something went wrong");
+
+      if (!res.ok) throw new Error(data.error);
+      setResult(data);
     } catch (err) {
       console.error(err);
       alert("Upload failed");
@@ -44,51 +42,80 @@ export default function WatermarkPage() {
   };
 
   return (
-    <div className="p-6 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Upload & Watermark</h1>
+    <div className="max-w-2xl mx-auto p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-center">Add Text Watermark</h1>
 
-      <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="mb-4" />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+        className="border p-2 w-full rounded"
+      />
 
-      <div className="mb-4">
-        <label className="mr-2">Watermark Type:</label>
-        <select value={watermarkType} onChange={(e) => setWatermarkType(e.target.value as any)}>
-          <option value="text">Text</option>
-          <option value="logo">Logo</option>
+      <input
+        className="border p-2 w-full rounded"
+        placeholder="Watermark text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+
+      <div className="grid grid-cols-2 gap-4 mt-3">
+        <div>
+          <label className="block mb-1 font-medium">Color</label>
+          <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium">Font Size</label>
+          <input
+            type="number"
+            value={fontSize}
+            onChange={(e) => setFontSize(Number(e.target.value))}
+            className="border p-2 rounded w-full"
+          />
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <label className="block mb-1 font-medium">Position</label>
+        <select
+          className="border p-2 rounded w-full"
+          value={position}
+          onChange={(e) => setPosition(e.target.value)}
+        >
+          <option value="top-left">Top Left</option>
+          <option value="top-right">Top Right</option>
+          <option value="bottom-left">Bottom Left</option>
+          <option value="bottom-right">Bottom Right</option>
+          <option value="center">Center</option>
         </select>
       </div>
 
-      {watermarkType === "text" && (
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Watermark text"
-          className="border p-1 mb-4 w-full"
-        />
-      )}
-
-      {watermarkType === "logo" && (
-        <input
-          value={logoId}
-          onChange={(e) => setLogoId(e.target.value)}
-          placeholder="Logo public ID"
-          className="border p-1 mb-4 w-full"
-        />
-      )}
-
       <button
         onClick={handleUpload}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className="bg-blue-500 text-white w-full py-2 rounded hover:bg-blue-600"
         disabled={loading}
       >
-        {loading ? "Processing..." : "Upload & Watermark"}
+        {loading ? "Processing..." : "Upload & Apply Watermark"}
       </button>
 
       {result && (
-        <div className="mt-6">
-          <h2 className="font-semibold mb-2">Original Image:</h2>
-          <img src={result.original} alt="Original" className="max-w-full border mb-4" />
-          <h2 className="font-semibold mb-2">Watermarked Image:</h2>
-          <img src={result.watermarked} alt="Watermarked" className="max-w-full border" />
+        <div className="mt-6 space-y-4 text-center">
+          <div>
+            <h2 className="font-semibold mb-2">Original Image:</h2>
+            <img src={result.original} alt="Original" className="rounded-xl border mx-auto" />
+          </div>
+          <div>
+            <h2 className="font-semibold mb-2">Watermarked Image:</h2>
+            <img src={result.watermarked} alt="Watermarked" className="rounded-xl border mx-auto mb-3" />
+            <a
+              href={result.watermarked}
+              download
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              Download Watermarked Image
+            </a>
+          </div>
         </div>
       )}
     </div>
