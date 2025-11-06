@@ -16,6 +16,7 @@ import {
   ImagePlus,
   Recycle,
   Droplet,
+  Palette,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -26,6 +27,7 @@ const sidebarItems = [
   { href: "/image-filters", icon: ImagePlus, label: "Image Filter" },
   { href: "/format-convert", icon: Recycle, label: "Convert Format" },
   { href: "/watermark", icon: Droplet, label: "Watermark" },
+  { href: "/bg-removal", icon: Palette, label: "Background Removal" },
 ];
 
 export default function AppLayout({
