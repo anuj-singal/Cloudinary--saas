@@ -59,12 +59,18 @@ export default function HeroSection() {
             Launch App →
           </Link>
           <Link
-          href="#features"
-          scroll={false}
-          className="px-8 py-4 rounded-full border border-gray-500 text-gray-300 hover:bg-white/10 transition-all duration-300 font-medium"
-        >
-          Explore Features
-        </Link>
+            href="#features"
+            scroll={false} // prevent Next.js default routing
+            onClick={(e) => {
+              e.preventDefault();
+              const el = document.getElementById("features");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="px-8 py-4 rounded-full border border-gray-500 text-gray-300 hover:bg-white/10 transition-all duration-300 font-medium"
+          >
+            Explore Features
+          </Link>
+
 
         </motion.div>
 

@@ -68,12 +68,13 @@ const features = [
       "Ideal for sharing drafts or showcasing content without full download.",
     ],
     tvBorder: true,
+    darker: true, // make last feature slightly darker
   },
 ];
 
 export default function FeaturesSection() {
   return (
-    <section className="relative bg-black text-white overflow-hidden">
+    <section className="relative bg-black text-white overflow-hidden" id="features">
       <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent via-black/80 to-black" />
 
       <div className="max-w-7xl mx-auto px-6 py-32 space-y-32 relative z-10">
@@ -84,12 +85,12 @@ export default function FeaturesSection() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: i * 0.1 }}
             viewport={{ once: true }}
-            className="relative"
+            className={`relative ${feature.darker ? "opacity-70" : ""}`}
           >
             {/* Scroll-reveal glow */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 0.25, scale: 1 }}
+              whileInView={{ opacity: 0.15, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               viewport={{ once: true }}
               className="absolute -inset-10 bg-cyan-500/10 blur-3xl rounded-full"
@@ -104,7 +105,7 @@ export default function FeaturesSection() {
               <div className="relative w-full md:w-1/2 rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex justify-center items-center">
                 {/* Video */}
                 {feature.video && (
-                  <div className="relative w-full h-[300px] md:h-[400px]">
+                  <div className="relative w-full h-[300px] md:h-[400px] flex justify-center items-center">
                     <video
                       src={feature.video}
                       autoPlay
@@ -123,9 +124,9 @@ export default function FeaturesSection() {
                   </div>
                 )}
 
-                {/* Image grid / stack */}
+                {/* Image grid (2x2) */}
                 {feature.images && feature.grid && (
-                  <div className="grid grid-cols-2 gap-4 p-4 justify-center">
+                  <div className="grid grid-cols-2 grid-rows-2 gap-4 p-4 justify-center">
                     {feature.images.map((img, idx) => (
                       <img
                         key={idx}
@@ -137,6 +138,7 @@ export default function FeaturesSection() {
                   </div>
                 )}
 
+                {/* Large Image (Crop) */}
                 {feature.images && feature.largeImage && (
                   <img
                     src={feature.images[0]}
@@ -145,14 +147,15 @@ export default function FeaturesSection() {
                   />
                 )}
 
+                {/* Stacked images (Watermark) */}
                 {feature.images && feature.stacked && (
-                  <div className="flex flex-col gap-4 p-4 justify-center items-center">
+                  <div className="flex flex-col gap-6 p-4 justify-center items-center">
                     {feature.images.map((img, idx) => (
                       <img
                         key={idx}
                         src={img}
                         alt={`${feature.title} ${idx + 1}`}
-                        className="rounded-xl object-cover w-72 md:w-80 shadow-lg"
+                        className="rounded-xl object-cover w-80 md:w-96 shadow-lg"
                       />
                     ))}
                   </div>
@@ -162,14 +165,14 @@ export default function FeaturesSection() {
               </div>
 
               {/* Text Section */}
-              <div className="w-full md:w-1/2 space-y-0">
+              <div className="w-full md:w-1/2 space-y-2">
                 <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent drop-shadow-md leading-snug">
                   {feature.title}
                 </h2>
                 {feature.description.map((desc, idx) => (
                   <p
                     key={idx}
-                    className="text-lg text-gray-300 max-w-lg leading-snug"
+                    className="text-lg text-gray-300 max-w-lg leading-tight"
                   >
                     {desc}
                   </p>
