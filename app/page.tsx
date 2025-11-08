@@ -11,7 +11,7 @@ export default function HomePage() {
     <main className="bg-black text-white overflow-x-hidden">
       {/* Hero */}
       <HeroSection />
-
+              
       {/* Features */}
       <FeaturesSection />
 

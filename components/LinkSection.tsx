@@ -11,6 +11,7 @@ const links = [
   { title: "FAQ", url: "/faq", description: "Frequently asked questions about features and usage." },
 ];
 
+
 export default function LinksSection() {
   return (
     <section className="bg-black/90 py-2 px-6">

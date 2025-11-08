@@ -33,9 +33,7 @@ const sidebarItems = [
 
 export default function AppLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState("light");
   const pathname = usePathname();
@@ -62,157 +60,176 @@ export default function AppLayout({
   };
 
   return (
-    <div className="drawer lg:drawer-open">
-      <input
-        id="sidebar-drawer"
-        type="checkbox"
-        className="drawer-toggle"
-        checked={sidebarOpen}
-        onChange={() => setSidebarOpen(!sidebarOpen)}
-      />
-
-      {/* MAIN CONTENT */}
-      <div className="drawer-content flex flex-col min-h-screen bg-gradient-to-br from-base-200 via-base-300 to-base-200">
-        {/* MOBILE TOP NAV */}
-        <div className="lg:hidden sticky top-0 z-40 bg-base-100/95 backdrop-blur-md border-b border-base-300/20">
-          <div className="flex items-center justify-between p-4">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="btn btn-ghost btn-square hover:bg-base-200 transition-colors duration-200"
-            >
-              <MenuIcon className="w-6 h-6" />
-            </button>
-            <Logo/>
-            <div className="w-12"></div>
-          </div>
-        </div>
-
-        <main className="flex-grow">
-          <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-            {children}
-          </div>
-        </main>
-      </div>
-
+    <div className="flex min-h-screen bg-base-200">
       {/* SIDEBAR */}
-      <div className="drawer-side z-50">
-        <label htmlFor="sidebar-drawer" className="drawer-overlay lg:hidden"></label>
-        <aside className="w-80 h-full bg-gradient-to-b from-base-200 via-base-200 to-base-300 flex flex-col shadow-2xl border-r border-base-300/30">
-          {/* Close Btn for Mobile */}
-          <div className="lg:hidden flex justify-end p-4">
+      <aside
+        className={`fixed top-0 left-0 h-screen w-72 bg-gradient-to-b from-base-200 to-base-300 shadow-2xl border-r border-base-300 z-40 flex flex-col transition-transform duration-300 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        {/* Logo + Close/Toggle */}
+        <div className="flex items-center justify-between p-6 border-b border-base-300/80">
+          <div
+            onClick={() => router.push("/")}
+            className="cursor-pointer flex items-center gap-2"
+          >
+            <div className="scale-125">
+              <Logo />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+  
+            {/* Close (mobile only) */}
             <button
               onClick={() => setSidebarOpen(false)}
-              className="btn btn-ghost btn-square btn-sm hover:bg-base-300"
+              className="lg:hidden btn btn-ghost btn-square btn-sm hover:bg-base-300"
             >
               <XIcon className="w-5 h-5" />
             </button>
           </div>
+        </div>
 
-          {/* HEADER with LOGO + THEME TOGGLE */}
-          <div className="flex items-center justify-between px-6 py-8 border-b border-base-300/50">
-            <div
-              onClick={() => router.push("/")}
-              className="cursor-pointer hover:scale-105 transition-all duration-300"
-            >
-              <Logo/>
-            </div>
-
-            {/* THEME TOGGLE BUTTON */}
-            <button
-              onClick={handleThemeToggle}
-              className={`relative w-12 h-12 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 border-2 ${
-                theme === "light"
-                  ? "bg-slate-100 border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-slate-900"
-                  : "bg-slate-700 border-slate-600 hover:bg-slate-600 text-slate-200 hover:text-white"
-              }`}
-              title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                {theme === "light" ? (
-                  <MoonIcon className="w-5 h-5 transition-transform duration-300" />
-                ) : (
-                  <SunIcon className="w-5 h-5 transition-transform duration-300" />
-                )}
-              </div>
-              <div
-                className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
-                  theme === "light"
-                    ? "bg-gradient-to-r from-amber-200/20 to-orange-200/20 opacity-0 hover:opacity-100"
-                    : "bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 hover:opacity-100"
+        {/* NAV LINKS */}
+        <nav className="flex-1 px-4 py-5 overflow-y-auto">
+          <div className="space-y-2">
+            {sidebarItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`group flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                  pathname === item.href
+                    ? "bg-gradient-to-r from-primary to-primary/70 text-primary-content shadow-md"
+                    : "hover:bg-base-100 hover:shadow-sm text-base-content"
                 }`}
-              ></div>
+              >
+                <item.icon
+                  className={`w-5 h-5 transition-transform ${
+                    pathname === item.href
+                      ? "scale-110"
+                      : "group-hover:scale-110"
+                  }`}
+                />
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        </nav>
+
+        {/* SIGN OUT (anchored bottom) */}
+        {user && (
+          <div className="mt-auto p-4 border-t border-base-300/50">
+            <button
+              onClick={handleSignOut}
+              className="w-full btn btn-outline border-error text-error hover:bg-error hover:text-error-content transition-all duration-200 shadow-sm hover:shadow-lg font-semibold"
+            >
+              <LogOutIcon className="w-4 h-4 mr-2" /> Sign Out
+            </button>
+          </div>
+        )}
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <div className="flex-1 lg:ml-72">
+        {/* FIXED NAVBAR (desktop only) */}
+        <header className="hidden lg:flex fixed top-0 left-0 lg:left-72 right-0 h-16 bg-base-100/80 backdrop-blur-md border-b border-base-300/40 items-center justify-between px-4 sm:px-8 z-30 shadow-sm">
+          {/* Left - Docs Button */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push("/docs")}
+              className="btn btn-sm btn-primary shadow-md hover:scale-105 transition-transform"
+            >
+              <LayoutDashboardIcon className="w-4 h-4 mr-2" /> Docs
             </button>
           </div>
 
-          {/* NAVIGATION LINKS */}
-          <div className="flex-grow px-4 py-6">
-            <nav className="space-y-2">
-              {sidebarItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`group flex items-center space-x-4 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
-                    pathname === item.href
-                      ? "bg-gradient-to-r from-primary to-primary/80 text-primary-content shadow-lg scale-105"
-                      : "hover:bg-base-100 hover:shadow-md hover:scale-102 text-base-content"
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <item.icon
-                    className={`w-5 h-5 transition-transform duration-200 ${
-                      pathname === item.href
-                        ? "scale-110"
-                        : "group-hover:scale-110"
-                    }`}
-                  />
-                  <span className="font-semibold">{item.label}</span>
-                </Link>
-              ))}
-            </nav>
-          </div>
+          {/* Right side */}
+          <div className="flex items-center gap-3">
+            {/* Theme toggle (visible + to left of Upload) */}
+            <button
+              onClick={handleThemeToggle}
+              className="btn btn-circle btn-ghost btn-sm border border-base-300 hover:bg-base-300"
+              title="Toggle theme"
+            >
+              {theme === "light" ? (
+                <MoonIcon className="w-4 h-4" />
+              ) : (
+                <SunIcon className="w-4 h-4 text-yellow-400" />
+              )}
+            </button>
 
-          {/* USER SECTION */}
-          {user && (
-            <div className="px-4 pb-6 border-t border-base-300/50 bg-gradient-to-r from-base-200/50 to-base-300/50">
-              <div className="pt-6">
-                <div className="bg-base-100 rounded-xl p-4 mb-4 shadow-sm border border-base-300/30">
-                  <div className="flex items-center space-x-3">
-                    <div className="avatar">
-                      <div className="w-12 h-12 rounded-full ring-2 ring-primary/30 ring-offset-2 ring-offset-base-100 relative overflow-hidden">
-                        <Image
-                          src={user.imageUrl}
-                          alt={
-                            user.username ||
-                            user.emailAddresses[0].emailAddress
-                          }
-                          fill
-                          sizes="48px"
-                          className="rounded-full object-cover"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-base-content truncate">
-                        {user.username || user.firstName || "User"}
-                      </p>
-                      <p className="text-xs text-base-content/60 truncate">
-                        {user.emailAddresses[0].emailAddress}
-                      </p>
-                    </div>
+            {/* Upload Button */}
+            <button
+              onClick={() => router.push("/video-upload")}
+              className="btn btn-sm btn-accent rounded-full shadow-sm hover:scale-105 transition-transform flex items-center gap-2"
+              title="Go to Video Upload"
+            >
+              <UploadIcon className="w-4 h-4" />
+              <span>Upload</span>
+            </button>
+
+            {/* User info */}
+            {user && (
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="avatar">
+                  <div className="w-8 h-8 rounded-full relative overflow-hidden">
+                    <Image
+                      src={user.imageUrl}
+                      alt="user"
+                      fill
+                      sizes="32px"
+                      className="object-cover"
+                    />
                   </div>
                 </div>
-
-                <button
-                  onClick={handleSignOut}
-                  className="w-full btn btn-outline btn-error hover:btn-error hover:text-error-content transition-all duration-200 shadow-sm hover:shadow-md"
-                >
-                  <LogOutIcon className="mr-2 h-4 w-4" />
-                  <span className="font-semibold">Sign Out</span>
-                </button>
+                <span className="text-sm font-medium text-base-content">
+                  {user.primaryEmailAddress?.emailAddress ||
+                    user.emailAddresses[0]?.emailAddress ||
+                    "user@example.com"}
+                </span>
               </div>
-            </div>
-          )}
-        </aside>
+            )}
+          </div>
+        </header>
+
+        {/* MOBILE TOPBAR - minimal */}
+        <header className="flex lg:hidden fixed top-0 left-0 right-0 h-14 bg-base-100 border-b border-base-300 shadow-sm items-center justify-between px-4 z-30">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="btn btn-ghost btn-square"
+          >
+            {theme === "light" ? (
+                <MenuIcon className="w-6 h-6" />
+              ) : (
+                <MenuIcon className="w-4 h-4 text-yellow-400" />
+              )}
+            
+          </button>
+
+            {/* Theme toggle (visible + to left of Upload) */}
+            <button
+              onClick={handleThemeToggle}
+              className="btn btn-circle btn-ghost btn-sm border border-base-300  hover:bg-base-300"
+              title="Toggle theme"
+            >
+              {theme === "light" ? (
+                <MoonIcon className="w-4 h-4" />
+              ) : (
+                <SunIcon className="w-4 h-4 text-yellow-400" />
+              )}
+            </button>
+
+          <button
+            onClick={() => router.push("/docs")}
+            className="btn btn-xs btn-primary"
+          >
+            Docs
+          </button>
+        </header>
+
+        {/* MAIN PAGE CONTENT */}
+        <main className="pt-20 px-4 sm:px-6 lg:px-8 pb-8">{children}</main>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ export default function DocsPage() {
         ANUJ
       </p>
       <Link
-        href="/"
+        href="/info/"
         className="px-8 py-4 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:scale-105 transition-transform duration-300 shadow-lg font-semibold"
       >
         Back to Home
