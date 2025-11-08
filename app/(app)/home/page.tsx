@@ -11,8 +11,6 @@ import { useUser, SignInButton } from "@clerk/nextjs";
 function Home() {
   const router = useRouter();
   const { isSignedIn, isLoaded, user } = useUser();
-  const userId = user?.id; // ✅ Correct way to get logged-in user's ID
-
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,45 +44,12 @@ function Home() {
   }, []);
 
   const handleDelete = (id: string) => {
-    setVideos(videos.filter(v => v.id !== id));
+    setVideos(videos.filter((v) => v.id !== id));
   };
 
   const handleVisibilityToggle = (id: string, visibility: "public" | "private") => {
-    setVideos(videos.map(v => (v.id === id ? { ...v, visibility } : v)));
+    setVideos(videos.map((v) => (v.id === id ? { ...v, visibility } : v)));
   };
-
-  const Navbar = () => (
-    <nav className="fixed top-0 left-0 w-full bg-base-100/80 dark:bg-gray-900/70 backdrop-blur-md border-b border-base-300/40 z-50">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <button
-          onClick={() => router.push("/home")}
-          className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent hover:scale-105 transition-transform"
-        >
-          Streamify
-        </button>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push("/")}
-            className="btn btn-sm border border-primary/30 hover:bg-primary/10 text-primary transition"
-          >
-            Welcome
-          </button>
-          {isSignedIn ? (
-            <button
-              onClick={() => router.push("/video-upload")}
-              className="btn btn-sm btn-primary flex items-center gap-2 hover:btn-primary-focus shadow-md transition"
-            >
-              <UploadIcon className="w-4 h-4" /> Upload
-            </button>
-          ) : (
-            <SignInButton mode="modal">
-              <button className="btn btn-sm btn-primary">Login</button>
-            </SignInButton>
-          )}
-        </div>
-      </div>
-    </nav>
-  );
 
   if (loading)
     return <div className="min-h-screen flex items-center justify-center text-lg">Loading videos...</div>;
@@ -108,8 +73,7 @@ function Home() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-base-200 via-base-300 to-base-200">
-      <Navbar />
-      <div className="relative container mx-auto px-6 py-24">
+      <div className="container mx-auto px-6 py-24">
         <div className="text-center mb-20">
           <div className="flex items-center justify-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mr-6 shadow-2xl">
@@ -136,10 +100,10 @@ function Home() {
               >
                 <VideoCard
                   video={video}
+                  currentUserId={user?.id ?? ""}
                   onDownload={handleDownload}
-                  onDelete={userId === video.userId ? handleDelete : undefined} // ✅ only owner can delete
-                  onToggleVisibility={userId === video.userId ? handleVisibilityToggle : undefined} // ✅ only owner can toggle
-                  isOwner={userId === video.userId} // optional prop for extra UI control
+                  onDelete={handleDelete}
+                  onToggleVisibility={handleVisibilityToggle}
                 />
               </div>
             ))}

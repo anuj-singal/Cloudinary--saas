@@ -12,22 +12,22 @@ dayjs.extend(relativeTime);
 
 interface VideoCardProps {
   video: Video;
+  currentUserId: string;
   onDownload: (url: string, title: string) => void;
   onDelete?: (id: string) => void;
   onToggleVisibility?: (id: string, visibility: "public" | "private") => void;
-  isOwner: boolean; // ✅ New
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({
   video,
+  currentUserId,
   onDownload,
   onDelete,
   onToggleVisibility,
-  isOwner,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [previewError, setPreviewError] = useState(false);
-  const [visibility, setVisibility] = useState<"public" | "private">(video.visibility as "public" | "private");
+  const [visibility, setVisibility] = useState<"public" | "private">(video.visibility);
 
   const getThumbnailUrl = useCallback(
     (publicId: string) =>
@@ -44,15 +44,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
     []
   );
 
-  const getFullVideoUrl = useCallback(
-    (publicId: string) =>
-      getCldVideoUrl({
-        src: publicId,
-        width: 1920,
-        height: 1080,
-      }),
-    []
-  );
+  const getFullVideoUrl = useCallback((publicId: string) => getCldVideoUrl({ src: publicId }), []);
 
   const getPreviewVideoUrl = useCallback(
     (publicId: string) =>
@@ -73,12 +65,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   }, []);
 
-  const compressionPercentage = Math.round((1 - Number(video.compressedSize) / Number(video.originalSize)) * 100);
+  const compressionPercentage = Math.round(
+    (1 - Number(video.compressedSize) / Number(video.originalSize)) * 100
+  );
 
   const toggleVisibility = async () => {
     const newVisibility = visibility === "public" ? "private" : "public";
     try {
-      await axios.patch(`/api/videos/${video.id}/visibility`, { visibility: newVisibility });
+      await axios.patch(`/api/videos/${video.id}`, { visibility: newVisibility });
       setVisibility(newVisibility);
       onToggleVisibility?.(video.id, newVisibility);
     } catch (err) {
@@ -95,6 +89,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
       console.error(err);
     }
   };
+
+  const isOwner = currentUserId === video.userId;
 
   return (
     <div
@@ -169,26 +165,23 @@ const VideoCard: React.FC<VideoCardProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-between gap-2">
-          <button
-            className="btn btn-primary flex-1"
-            onClick={() => onDownload(getFullVideoUrl(video.publicId), video.title)}
-          >
-            <Download size={18} className="mr-2" />
-            Download
-          </button>
-
-          {isOwner && (
-            <>
-              <button className="btn btn-outline flex-1" onClick={toggleVisibility}>
-                {visibility === "public" ? "Make Private" : "Make Public"}
-              </button>
-              <button className="btn btn-error flex-1" onClick={handleDelete}>
-                Delete
-              </button>
-            </>
-          )}
-        </div>
+        {isOwner && (
+          <div className="flex justify-between gap-2">
+            <button
+              className="btn btn-primary flex-1"
+              onClick={() => onDownload(getFullVideoUrl(video.publicId), video.title)}
+            >
+              <Download size={18} className="mr-2" />
+              Download
+            </button>
+            <button className="btn btn-outline flex-1" onClick={toggleVisibility}>
+              {visibility === "public" ? "Make Private" : "Make Public"}
+            </button>
+            <button className="btn btn-error flex-1" onClick={handleDelete}>
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

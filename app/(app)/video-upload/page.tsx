@@ -27,7 +27,7 @@ function VideoUpload() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
-  // File selection handler
+  // handle file select from input
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0]
     if (selectedFile) {
@@ -37,12 +37,12 @@ function VideoUpload() {
     }
   }, [])
 
-  // Drag over handler
+  // handle drag over event
   const handleDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault()
   }, [])
 
-  // Drop handler
+  // handle drop event
   const handleDrop = useCallback((event: React.DragEvent) => {
     event.preventDefault()
     const droppedFile = event.dataTransfer.files[0]
@@ -53,12 +53,11 @@ function VideoUpload() {
     }
   }, [])
 
-  // Submit handler
+  // handle submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if(!file) return
 
-    // Check file size
     if(file.size > MAX_FILE_SIZE) {
       setError("File size too large. Maximum allowed size is 70MB.")
       return
@@ -68,7 +67,7 @@ function VideoUpload() {
     setError(null)
     setUploadProgress(0)
 
-    // Simulate progress for UX while uploading
+    // Simulate progress for better UX while uploading
     const progressInterval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 90) {
@@ -80,35 +79,32 @@ function VideoUpload() {
     }, 200)
 
     try {
-      // Server-side upload using your API route
       const formData = new FormData()
       formData.append("file", file)
       formData.append("title", title)
       formData.append("description", description)
       formData.append("originalSize", file.size.toString())
 
-      const res = await axios.post("/api/video-upload", formData, {
+      // ✅ Upload to new /api/videos route (type-safe)
+      await axios.post("/api/videos", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: progressEvent => {
-          if (progressEvent.total) { // ✅ check if total exists
-            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            setUploadProgress(percent)
+          if (progressEvent.total) {
+            setUploadProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total))
           }
         }
       })
 
-
-      // Upload successful
       setUploadProgress(100)
       setSuccess(true)
       
-      // Reset form after success and redirect to home
+      // Reset form after successful upload
       setTimeout(() => {
         setFile(null)
         setTitle("")
         setDescription("")
         setSuccess(false)
-        router.push('/home')
+        router.push('/home') // redirect to home after upload
       }, 2000)
 
     } catch (err) {
@@ -119,7 +115,7 @@ function VideoUpload() {
       setIsUploading(false)
     }
   } 
- 
+
   return (
     <div className="relative">
       {/* Header Section */}
