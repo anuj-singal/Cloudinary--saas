@@ -27,6 +27,7 @@ function VideoUpload() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
+  // File selection handler
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0]
     if (selectedFile) {
@@ -36,10 +37,12 @@ function VideoUpload() {
     }
   }, [])
 
+  // Drag over handler
   const handleDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault()
   }, [])
 
+  // Drop handler
   const handleDrop = useCallback((event: React.DragEvent) => {
     event.preventDefault()
     const droppedFile = event.dataTransfer.files[0]
@@ -50,10 +53,12 @@ function VideoUpload() {
     }
   }, [])
 
+  // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if(!file) return
 
+    // Check file size
     if(file.size > MAX_FILE_SIZE) {
       setError("File size too large. Maximum allowed size is 70MB.")
       return
@@ -63,7 +68,7 @@ function VideoUpload() {
     setError(null)
     setUploadProgress(0)
 
-    // Simulate progress for better UX while uploading
+    // Simulate progress for UX while uploading
     const progressInterval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 90) {
@@ -75,50 +80,29 @@ function VideoUpload() {
     }, 200)
 
     try {
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME as string | undefined
-      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string | undefined
+      // Server-side upload using your API route
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("title", title)
+      formData.append("description", description)
+      formData.append("originalSize", file.size.toString())
 
-      // Prefer direct unsigned upload in production to avoid 413
-      if (cloudName && uploadPreset) {
-        const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/video/upload`
-        const cloudForm = new FormData()
-        cloudForm.append("file", file)
-        cloudForm.append("upload_preset", uploadPreset)
-        cloudForm.append("folder", "video-uploads")
-        
-        const cloudinaryResponse = await fetch(uploadUrl, { method: "POST", body: cloudForm })
-        if (!cloudinaryResponse.ok) {
-          throw new Error("Cloudinary direct upload failed")
+      const res = await axios.post("/api/video-upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: progressEvent => {
+          if (progressEvent.total) { // ✅ check if total exists
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            setUploadProgress(percent)
+          }
         }
-        const cloudJson = await cloudinaryResponse.json() as {
-          public_id: string
-          bytes?: number
-          duration?: number
-        }
+      })
 
-        // Persist metadata to DB
-        await axios.post("/api/videos", {
-          title,
-          description,
-          publicId: cloudJson.public_id,
-          originalSize: String(file.size),
-          compressedSize: String((cloudJson.bytes ?? file.size)),
-          duration: cloudJson.duration ?? 0,
-        })
-      } else {
-        // Fallback to server upload
-        const formData = new FormData()
-        formData.append("file", file)
-        formData.append("title", title)
-        formData.append("description", description)
-        formData.append("originalSize", file.size.toString())
-        await axios.post("/api/video-upload", formData)
-      }
 
+      // Upload successful
       setUploadProgress(100)
       setSuccess(true)
       
-      // Reset form after successful upload
+      // Reset form after success and redirect to home
       setTimeout(() => {
         setFile(null)
         setTitle("")

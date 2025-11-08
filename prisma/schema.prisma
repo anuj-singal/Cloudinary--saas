@@ -17,14 +17,15 @@ datasource db {
 }
 
 model Video {
-  id            String @id @default(cuid())
-  title         String 
-  description   String?
-  publicId      String
-  originalSize  String
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  publicId       String
+  originalSize   String
   compressedSize String
-  duration      Float
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  userId        String   // ✅ added
+  duration       Float
+  visibility     String   @default("private") // "private" | "public"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userId         String
 }

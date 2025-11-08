@@ -82,7 +82,7 @@ export default function AppLayout({
             >
               <MenuIcon className="w-6 h-6" />
             </button>
-            <Logo theme={theme} />
+            <Logo/>
             <div className="w-12"></div>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function AppLayout({
               onClick={() => router.push("/")}
               className="cursor-pointer hover:scale-105 transition-all duration-300"
             >
-              <Logo theme={theme} />
+              <Logo/>
             </div>
 
             {/* THEME TOGGLE BUTTON */}

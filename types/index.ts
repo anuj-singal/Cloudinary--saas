@@ -1,12 +1,13 @@
 export interface Video {
-    id: string
-    publicId: string
-    title: string
-    description: string
-    originalSize: string
-    compressedSize: string
-    duration: number
-    createdAt: Date
-    updatedAt: Date
-    userId: string
+  id: string;
+  userId: string;
+  title: string;
+  description: string | null;
+  publicId: string;
+  originalSize: string;
+  compressedSize: string;
+  duration: number;
+  visibility: "private" | "public";
+  createdAt: Date;
+  updatedAt: Date;
 }
