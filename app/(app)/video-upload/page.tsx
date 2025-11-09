@@ -138,7 +138,7 @@ function VideoUpload() {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full mt-1 px-4 py-3 text-base border-2 border-base-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full mt-1 px-4 py-3 text-base-content border-2 border-base-300 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 placeholder="Enter video title"
                 required
               />
@@ -149,7 +149,7 @@ function VideoUpload() {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full mt-1 px-4 py-3 text-base border-2 border-base-300 rounded-xl focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 resize-none"
+                className="w-full mt-1 px-4 py-3 text-base-content border-2 border-base-300 rounded-xl focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 resize-none"
                 placeholder="Describe your video (optional)"
                 rows={4}
               />
@@ -228,7 +228,7 @@ function VideoUpload() {
             type="submit"
             onClick={handleSubmit}
             disabled={isUploading || !file || file.size > MAX_FILE_SIZE || !title.trim()}
-            className="btn btn-primary btn-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary text-base-content btn-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isUploading ? (
               <>
