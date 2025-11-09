@@ -24,7 +24,7 @@ import Logo from "@/components/logo";
 const sidebarItems = [
   { href: "/home", icon: LayoutDashboardIcon, label: "Home Page" },
   { href: "/social-share", icon: Share2Icon, label: "Social Share" },
-  { href: "/video-upload", icon: UploadIcon, label: "Video Upload" },
+  { href: "/video-upload", icon: UploadIcon, label: "Video Compress" },
   { href: "/image-filters", icon: ImagePlus, label: "Image Filter" },
   { href: "/format-convert", icon: Recycle, label: "Convert Format" },
   { href: "/watermark", icon: Droplet, label: "Watermark" },
