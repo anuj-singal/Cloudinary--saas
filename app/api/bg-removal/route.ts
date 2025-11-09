@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as Blob | null;
     const bgColor = formData.get("bgColor") as string;
     const bgImage = formData.get("bgImage") as string;
+    const isTransparent = formData.get("isTransparent") === "true";
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -22,34 +23,19 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Cloudinary with background removal
-    const uploadResponse = await cloudinary.uploader.upload_stream(
-      {
-        folder: "bg-removal",
-        transformation: [
-          { effect: "background_removal" }, // AI background removal
-          bgImage
-            ? { overlay: bgImage, width: "1.0", crop: "fill" }
-            : { background: bgColor },
-        ],
-        format: "png",
-      },
-      (error, result) => {
-        if (error) throw error;
-        return result;
-      }
-    );
-
-    // Need to handle the stream properly
+    // ✅ Only one upload_stream call
     const result: any = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder: "bg-removal",
+          timeout: 60000, // 60s Cloudinary timeout
           transformation: [
             { effect: "background_removal" },
-            bgImage
+            isTransparent
+              ? {}
+              : bgImage
               ? { overlay: bgImage, width: "1.0", crop: "fill" }
-              : { background: bgColor },
+              : { background: bgColor || "#ffffff" },
           ],
           format: "png",
         },
@@ -63,10 +49,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ secure_url: result.secure_url });
   } catch (err: any) {
-    console.error("Error removing background:", err);
-    return NextResponse.json(
-      { error: "Failed to remove or replace background" },
-      { status: 500 }
-    );
+    console.error("❌ Error removing background:", err);
+    const message =
+      err?.http_code === 499
+        ? "Cloudinary request timed out. Try with a smaller image."
+        : "Failed to remove or replace background.";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
