@@ -3,80 +3,77 @@
 import React, { useState, useRef } from "react";
 import {
   UploadIcon,
-  ImageIcon,
+  TypeIcon,
+  PaletteIcon,
   DownloadIcon,
-  SparklesIcon,
-  PaintBucket,
   Zap,
+  LayersIcon,
+  SparklesIcon,
+  ImageIcon,
 } from "lucide-react";
 
-export default function BgRemovalPage() {
+export default function WatermarkPage() {
   const [file, setFile] = useState<File | null>(null);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [bgColor, setBgColor] = useState("#ffffff");
-  const [isTransparent, setIsTransparent] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [text, setText] = useState("MyBrand");
+  const [color, setColor] = useState("#ffffff");
+  const [fontSize, setFontSize] = useState(40);
+  const [position, setPosition] = useState("bottom-right");
+  const [result, setResult] = useState<{ original: string; watermarked: string } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processedUrl, setProcessedUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const colorPalette = [
-    "#ffffff", "#000000", "#ff0000", "#00ff00", "#0000ff",
-    "#facc15", "#ec4899", "#14b8a6", "#9333ea", "#94a3b8"
-  ];
-
-  // When user selects or drops image
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (!selectedFile) return;
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
     setIsUploading(true);
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setUploadedImage(reader.result as string);
-      setFile(selectedFile);
-      setIsUploading(false);
-      setProcessedUrl(null);
-    };
-    reader.readAsDataURL(selectedFile);
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected));
+    setResult(null);
+    setTimeout(() => setIsUploading(false), 800);
   };
 
-  // Apply background (processing phase)
-  const handleApply = async () => {
-    if (!file) return alert("Please select an image first.");
-    setIsProcessing(true);
-    setProcessedUrl(null);
+  const handleUpload = async () => {
+    if (!file) return alert("Please select an image first!");
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("bgColor", bgColor);
-    formData.append("isTransparent", isTransparent.toString());
+    formData.append("text", text);
+    formData.append("color", color);
+    formData.append("fontSize", fontSize.toString());
+    formData.append("position", position);
+
+    setIsProcessing(true);
+    setResult(null);
 
     try {
-      const res = await fetch("/api/bg-removal", {
+      const res = await fetch("/api/watermark", {
         method: "POST",
         body: formData,
       });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to process image");
-      setProcessedUrl(data.secure_url);
-    } catch (err: any) {
-      alert(err.message);
+      if (!res.ok) throw new Error(data.error);
+      setResult(data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to process image");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  // Download
   const handleDownload = () => {
     if (!imageRef.current) return;
     fetch(imageRef.current.src)
-      .then((response) => response.blob())
+      .then((res) => res.blob())
       .then((blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `background-${isTransparent ? "transparent" : bgColor}.png`;
+        link.download = "watermarked_image.png";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -85,37 +82,37 @@ export default function BgRemovalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col items-center py-8 px-4">
-      <div className="max-w-5xl w-full">
+    <div className="w-full min-h-screen bg-base-200 flex flex-col items-center py-8">
+      <div className="w-full max-w-6xl px-4">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
-            Background Customizer
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            Text Watermark Creator
           </h1>
-          <p className="text-base text-base-content/70 mt-2">
-            Instantly remove or replace your image background with color or keep it transparent.
+          <p className="text-base text-base-content/70 mt-3">
+            Upload your image, customize your watermark, and download instantly.
           </p>
         </div>
 
         {/* Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Upload Card */}
-          <div className="bg-base-100/90 backdrop-blur-md rounded-xl shadow-md border border-base-300/20 p-4 flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Upload + Settings */}
+          <div className="bg-base-100/90 backdrop-blur-md rounded-2xl shadow-lg border border-base-300/30 p-6 flex flex-col">
             <div className="flex items-center mb-3">
               <UploadIcon className="w-5 h-5 text-primary mr-2" />
-              <h2 className="text-lg font-semibold text-base-content">Upload & Customize</h2>
+              <h2 className="text-lg font-semibold text-base-content">Upload Image</h2>
             </div>
 
-            {/* File Input */}
-            <div className="relative mb-3">
+            <div className="relative mb-4">
               <input
+                ref={fileInputRef}
                 type="file"
+                onChange={handleFileUpload}
                 accept="image/*"
-                onChange={handleFileChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
               <div
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
+                className={`border-2 border-dashed rounded-xl p-10 text-center transition-all duration-300 ${
                   isUploading
                     ? "border-primary bg-primary/5 animate-pulse"
                     : "border-base-300 hover:border-primary hover:bg-primary/5"
@@ -126,130 +123,133 @@ export default function BgRemovalPage() {
                     <Zap className="w-6 h-6 text-primary mx-auto animate-spin" />
                     <p className="text-sm font-medium text-primary">Uploading...</p>
                   </div>
-                ) : uploadedImage ? (
-                  <div className="space-y-2">
-                    <img
-                      src={uploadedImage}
-                      alt="preview"
-                      className="w-32 h-32 object-cover rounded-md mx-auto"
-                    />
-                    <p className="text-xs text-base-content/60">Ready to process</p>
-                  </div>
+                ) : preview ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="rounded-xl max-h-56 mx-auto object-contain shadow-md"
+                  />
                 ) : (
                   <div className="space-y-1">
-                    <ImageIcon className="w-8 h-8 text-base-content/50 mx-auto" />
+                    <LayersIcon className="w-8 h-8 text-base-content/50 mx-auto" />
                     <p className="text-sm text-base-content">Click or drop an image</p>
-                    <p className="text-xs text-base-content/60">JPG, PNG, WebP max 10MB</p>
+                    <p className="text-xs text-base-content/60">JPG, PNG, WebP up to 10MB</p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Color Picker */}
-            <div className="mt-4">
-              <label className="block font-semibold text-base-content mb-2">
-                Choose Background
-              </label>
-              <div className="flex items-center gap-3 mb-3">
-                <input
-                  type="color"
-                  value={bgColor}
-                  onChange={(e) => {
-                    setBgColor(e.target.value);
-                    setIsTransparent(false);
-                  }}
-                  disabled={isTransparent}
-                  className="w-10 h-10 rounded-full border border-base-300 cursor-pointer"
-                />
-                <label className="flex items-center gap-2 cursor-pointer">
+            {file && (
+              <>
+                <div className="mb-3">
+                  <label className="mb-1 font-medium flex items-center">
+                    <TypeIcon className="w-4 h-4 mr-2 text-secondary" /> Watermark Text
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={isTransparent}
-                    onChange={(e) => {
-                      setIsTransparent(e.target.checked);
-                      if (e.target.checked) setBgColor("transparent");
-                      else setBgColor("#ffffff");
-                    }}
-                    className="checkbox checkbox-primary"
+                    className="input input-bordered w-full"
+                    placeholder="Enter text..."
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
                   />
-                  <span className="text-sm">No background (transparent)</span>
-                </label>
-              </div>
+                </div>
 
-              {/* Color Palette */}
-              <div className="grid grid-cols-5 gap-2">
-                {colorPalette.map((color) => (
-                  <button
-                    key={color}
-                    className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                      bgColor === color && !isTransparent
-                        ? "border-primary scale-110"
-                        : "border-base-300"
-                    }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => {
-                      setBgColor(color);
-                      setIsTransparent(false);
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <label className="mb-1 font-medium flex items-center">
+                      <PaletteIcon className="w-4 h-4 mr-2 text-accent" /> Color
+                    </label>
+                    <input
+                      type="color"
+                      value={color}
+                      onChange={(e) => setColor(e.target.value)}
+                      className="w-full h-10 rounded cursor-pointer border border-base-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-1 font-medium">Font Size</label>
+                    <input
+                      type="number"
+                      value={fontSize}
+                      onChange={(e) => setFontSize(Number(e.target.value))}
+                      className="input input-bordered w-full"
+                    />
+                  </div>
+                </div>
 
-            <button
-              onClick={handleApply}
-              disabled={!uploadedImage || isProcessing}
-              className="btn btn-primary mt-6 text-sm font-semibold flex items-center justify-center gap-2"
-            >
-              <PaintBucket className="w-4 h-4" />
-              Apply Background
-            </button>
+                <div className="mb-4">
+                  <label className="block mb-1 font-medium">Position</label>
+                  <select
+                    className="select select-bordered w-full"
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                  >
+                    <option value="top-left">Top Left</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-right">Bottom Right</option>
+                    <option value="center">Center</option>
+                  </select>
+                </div>
+
+                <button
+                  onClick={handleUpload}
+                  className="btn btn-primary w-full"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Processing..." : "Apply Watermark"}
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Preview Card */}
-          <div className="bg-base-100/90 backdrop-blur-md rounded-xl shadow-md border border-base-300/20 p-4 flex flex-col">
+          {/* Preview & Download */}
+          <div className="bg-base-100/90 backdrop-blur-md rounded-2xl shadow-lg border border-base-300/30 p-6 flex flex-col">
             <div className="flex items-center mb-3">
               <SparklesIcon className="w-5 h-5 text-accent mr-2" />
               <h2 className="text-lg font-semibold text-base-content">Preview & Download</h2>
             </div>
 
-            {processedUrl ? (
-              <div className="flex flex-col space-y-3">
-                <div
-                  className={`relative rounded-lg p-1 flex items-center justify-center min-h-[200px] ${
-                    isTransparent
-                      ? "bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22><rect width=%2210%22 height=%2210%22 fill=%22%23ccc%22/><rect x=%2210%22 y=%2210%22 width=%2210%22 height=%2210%22 fill=%22%23ccc%22/></svg>')] bg-[length:20px_20px]"
-                      : "bg-base-200/50"
-                  }`}
-                >
+            {result ? (
+              <div className="flex flex-col space-y-4">
+                <div className="relative bg-base-200/50 rounded-xl p-1 flex items-center justify-center min-h-[240px] border border-base-300/30 transition-all duration-300 hover:border-primary/40 hover:shadow-md">
                   {isProcessing && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-base-100/80 backdrop-blur-sm rounded-lg z-10">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-base-100/80 backdrop-blur-sm z-10 rounded-xl space-y-2">
                       <Zap className="w-8 h-8 text-primary animate-spin" />
-                      <span className="ml-2 text-sm font-medium text-primary">Processing...</span>
+                      <span className="text-sm font-medium text-primary">Processing...</span>
                     </div>
                   )}
+
                   <img
+                    src={result.watermarked}
+                    alt="Watermarked"
                     ref={imageRef}
-                    src={processedUrl}
-                    alt="Processed"
-                    className="rounded-lg object-contain shadow-sm max-h-[350px]"
+                    className="rounded-xl max-h-80 mx-auto border object-contain shadow-md"
                   />
                 </div>
 
                 <button
                   onClick={handleDownload}
-                  className="btn btn-primary w-full text-sm flex items-center justify-center gap-1"
+                  className="relative inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-primary to-accent text-white shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
                   disabled={isProcessing}
                 >
                   <DownloadIcon className="w-4 h-4" />
                   Download
                 </button>
               </div>
+            ) : preview ? (
+              <div className="text-center">
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="rounded-xl max-h-80 mx-auto border object-contain shadow-md"
+                />
+                <p className="mt-2 text-base-content/60 text-sm">Preview before applying watermark</p>
+              </div>
             ) : (
-              <div className="text-center py-12 text-base-content/60">
+              <div className="text-center py-14 text-base-content/60">
                 <ImageIcon className="w-12 h-12 mx-auto mb-2" />
-                <p className="font-medium text-sm">No processed image</p>
-                <p className="text-xs">Upload and apply to preview</p>
+                <p className="font-medium text-sm">No image uploaded</p>
+                <p className="text-xs">Upload an image to preview & download</p>
               </div>
             )}
           </div>
