@@ -86,7 +86,7 @@ function VideoUpload() {
       formData.append("originalSize", file.size.toString())
 
       // ✅ Upload to new /api/videos route (type-safe)
-      await axios.post("/api/videos", formData, {
+      await axios.post("/api/video-upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: progressEvent => {
           if (progressEvent.total) {

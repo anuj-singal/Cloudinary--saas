@@ -33,8 +33,8 @@ const VideoCard: React.FC<VideoCardProps> = ({
     (publicId: string) =>
       getCldImageUrl({
         src: publicId,
-        width: 400,
-        height: 225,
+        width: 320,
+        height: 180,
         crop: "fill",
         gravity: "auto",
         format: "jpg",
@@ -45,20 +45,18 @@ const VideoCard: React.FC<VideoCardProps> = ({
   );
 
   const getFullVideoUrl = useCallback((publicId: string) => getCldVideoUrl({ src: publicId }), []);
-
   const getPreviewVideoUrl = useCallback(
     (publicId: string) =>
       getCldVideoUrl({
         src: publicId,
-        width: 400,
-        height: 225,
+        width: 320,
+        height: 180,
         rawTransformations: ["e_preview:duration_15:max_seg_9:min_seg_dur_1"],
       }),
     []
   );
 
   const formatSize = useCallback((size: number) => filesize(size), []);
-
   const formatDuration = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.round(seconds % 60);
@@ -91,23 +89,26 @@ const VideoCard: React.FC<VideoCardProps> = ({
   };
 
   const isOwner = currentUserId === video.userId;
+  const allowDownload = isOwner || video.visibility === "public";
 
   return (
     <div
-      className="group relative bg-gradient-to-br from-base-100 to-base-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-base-300/20 overflow-hidden"
+      className="group relative rounded-2xl shadow-md overflow-hidden border transition-transform duration-300 hover:-translate-y-1
+        bg-base-100 dark:bg-base-900 border-base-300 dark:border-base-700"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+
       {/* Video Preview */}
-      <div className="relative aspect-video overflow-hidden rounded-t-2xl">
+      <div className="relative aspect-video rounded-t-xl overflow-hidden">
         {isHovered ? (
           previewError ? (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-error/10 to-error/20 backdrop-blur-sm">
+            <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/30">
               <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-3 bg-error/20 rounded-full flex items-center justify-center">
-                  <Play className="w-6 h-6 text-error" />
+                <div className="w-10 h-10 mx-auto mb-1 bg-red-100 dark:bg-red-800 rounded-full flex items-center justify-center">
+                  <Play className="w-4 h-4 text-red-500" />
                 </div>
-                <p className="text-error font-medium">Preview not available</p>
+                <p className="text-red-500 dark:text-red-300 font-medium text-sm">Preview not available</p>
               </div>
             </div>
           ) : (
@@ -116,7 +117,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
               autoPlay
               muted
               loop
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-300 scale-100 group-hover:scale-105"
               onError={() => setPreviewError(true)}
             />
           )
@@ -125,63 +126,71 @@ const VideoCard: React.FC<VideoCardProps> = ({
             src={getThumbnailUrl(video.publicId)}
             alt={video.title}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="320px"
+            className="object-cover"
           />
         )}
-
-        <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
-          <Clock size={14} className="mr-1.5" />
+        <div className="absolute bottom-2 right-2 bg-black/70 dark:bg-white/20 text-white dark:text-black px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
+          <Clock size={10} />
           {formatDuration(video.duration)}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-3">
-          <h3 className="text-xl font-bold text-base-content line-clamp-2">{video.title}</h3>
-          <div className="bg-gradient-to-r from-accent to-accent/80 text-accent-content px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+      <div className="p-3 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm md:text-base font-semibold line-clamp-2 text-gray-900 dark:text-gray-100 ">{video.title}</h3>
+          <div className="text-xs font-bold text-white bg-black/70 dark:bg-white/20 dark:text-black px-2 py-0.5 rounded">
             -{compressionPercentage}%
           </div>
         </div>
 
-        <p className="text-sm text-base-content/70 line-clamp-2 mb-3">{video.description}</p>
-        <p className="text-xs text-base-content/50 font-medium">Uploaded {dayjs(video.createdAt).fromNow()}</p>
+        <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2">{video.description}</p>
+        <p className="text-[11px] text-gray-400 dark:text-gray-400">{dayjs(video.createdAt).fromNow()}</p>
 
-        <div className="grid grid-cols-2 gap-4 mb-5">
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-3 border border-primary/20">
-            <div className="flex items-center mb-2">
-              <FileUp size={16} className="mr-2 text-primary" />
-              <span className="text-sm font-semibold text-base-content">Original</span>
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 rounded px-2 py-1 text-xs border border-black/20 dark:border-white/20">
+            <div className="flex items-center gap-1">
+              <FileUp size={12} className="text-primary" />
+              Original
             </div>
-            <div className="text-lg font-bold text-primary">{formatSize(Number(video.originalSize))}</div>
+            <span className="font-semibold">{formatSize(Number(video.originalSize))}</span>
           </div>
-          <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-xl p-3 border border-secondary/20">
-            <div className="flex items-center mb-2">
-              <FileDown size={16} className="mr-2 text-secondary" />
-              <span className="text-sm font-semibold text-base-content">Compressed</span>
+          <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 rounded px-2 py-1 text-xs border border-black/20 dark:border-white/20">
+            <div className="flex items-center gap-1">
+              <FileDown size={12} className="text-secondary" />
+              Compressed
             </div>
-            <div className="text-lg font-bold text-secondary">{formatSize(Number(video.compressedSize))}</div>
+            <span className="font-semibold">{formatSize(Number(video.compressedSize))}</span>
           </div>
         </div>
 
-        {isOwner && (
-          <div className="flex justify-between gap-2">
-            <button
-              className="btn btn-primary flex-1"
-              onClick={() => onDownload(getFullVideoUrl(video.publicId), video.title)}
-            >
-              <Download size={18} className="mr-2" />
-              Download
-            </button>
-            <button className="btn btn-outline flex-1" onClick={toggleVisibility}>
-              {visibility === "public" ? "Make Private" : "Make Public"}
-            </button>
-            <button className="btn btn-error flex-1" onClick={handleDelete}>
-              Delete
-            </button>
+        {isOwner || video.visibility === "public" ? (
+          <div className="flex gap-2 mt-2 flex-wrap">
+            {allowDownload && (
+              <button
+                className={`btn btn-primary flex-1 ${!isOwner ? "w-auto" : ""} dark:btn-primary-dark`}
+                onClick={() => onDownload(getFullVideoUrl(video.publicId), video.title)}
+              >
+                <Download size={18} /> Download
+              </button>
+            )}
+            {isOwner && (
+              <>
+                <button
+                  className={`btn flex-1 ${visibility === "public" ? "btn-outline" : "btn-accent"} 
+                    dark:btn-outline-dark dark:btn-accent-dark`}
+                  onClick={toggleVisibility}
+                >
+                  {visibility === "public" ? "Make Private" : "Make Public"}
+                </button>
+                <button className="btn btn-error flex-1 dark:btn-error-dark" onClick={handleDelete}>
+                  Delete
+                </button>
+                              </>
+            )}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
