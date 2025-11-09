@@ -1,8 +1,15 @@
-export const runtime = "nodejs"; // ✅ force Node runtime
+export const runtime = "nodejs"; // force Node runtime
 
 import { NextResponse } from "next/server";
+import { v2 as cloudinary } from "cloudinary";
 
-import cloudinary from "@/lib/cloudinary"; // ✅ use your configured wrapper
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 export async function POST(req: Request) {
   try {
@@ -12,18 +19,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    // Generate transformed URL using the configured instance
+    console.log("Applying filter:", effect, "to public_id:", public_id);
+
+    // Generate transformed URL
     const transformedUrl = cloudinary.url(public_id, {
       transformation: [{ effect }],
-      secure: true, // ensures https
+      secure: true,
     });
 
-    return NextResponse.json({ url: transformedUrl });
+    // Add cache-buster to force React to re-render
+    const urlWithCacheBuster = `${transformedUrl}&cb=${Date.now()}`;
+
+    return NextResponse.json({ url: urlWithCacheBuster });
   } catch (error) {
     console.error("Image filter error:", error);
-    return NextResponse.json(
-      { error: "Transformation failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Transformation failed" }, { status: 500 });
   }
 }
