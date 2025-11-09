@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { UploadIcon, TypeIcon, PaletteIcon, DownloadIcon, Zap, LayersIcon } from "lucide-react";
+import {
+  UploadIcon,
+  TypeIcon,
+  PaletteIcon,
+  DownloadIcon,
+  Zap,
+  LayersIcon,
+} from "lucide-react";
 
 export default function WatermarkPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -14,7 +21,7 @@ export default function WatermarkPage() {
   const [loading, setLoading] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
     setFile(selected);
@@ -68,29 +75,29 @@ export default function WatermarkPage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-base-200 flex flex-col items-center py-8">
-      <div className="w-full max-w-6xl px-4">
+    <div className="min-h-screen w-full bg-base-200 flex flex-col items-center py-10">
+      <div className="w-full max-w-6xl px-4 space-y-10">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+        <header className="text-center space-y-3">
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
             Text Watermark Creator
           </h1>
-          <p className="text-lg text-base-content/70 mt-4">
+          <p className="text-base text-base-content/70">
             Upload your image and instantly apply a text watermark with custom style, color, and position.
           </p>
-        </div>
+        </header>
 
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Two Panel Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           {/* Upload + Settings */}
-          <div className="bg-base-100/90 backdrop-blur-md rounded-2xl shadow-xl border border-base-300/30 p-6 flex flex-col">
-            <div className="flex items-center mb-4">
-              <UploadIcon className="w-6 h-6 text-primary mr-2" />
+          <section className="bg-base-100/90 backdrop-blur-md rounded-2xl shadow-xl border border-base-300/30 p-6 flex flex-col gap-6">
+            <div className="flex items-center gap-2">
+              <UploadIcon className="w-6 h-6 text-primary" />
               <h2 className="text-xl font-semibold text-base-content">Upload Image</h2>
             </div>
 
-            {/* Upload box */}
-            <div className="relative mb-6">
+            {/* Upload Box */}
+            <div className="relative">
               <input
                 type="file"
                 accept="image/*"
@@ -98,7 +105,7 @@ export default function WatermarkPage() {
                 onChange={handleFileChange}
               />
               <div
-                className={`border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 ${
+                className={`border-2 border-dashed rounded-xl p-10 text-center transition-all duration-300 ${
                   loading
                     ? "border-primary bg-primary/5 animate-pulse"
                     : "border-base-300 hover:border-primary hover:bg-primary/5"
@@ -107,7 +114,7 @@ export default function WatermarkPage() {
                 {loading ? (
                   <div className="space-y-2">
                     <Zap className="w-8 h-8 text-primary mx-auto animate-spin" />
-                    <p className="text-base font-medium text-primary">Processing...</p>
+                    <p className="font-medium text-primary">Processing...</p>
                   </div>
                 ) : preview ? (
                   <img
@@ -118,7 +125,7 @@ export default function WatermarkPage() {
                 ) : (
                   <div className="space-y-2">
                     <LayersIcon className="w-10 h-10 text-base-content/50 mx-auto" />
-                    <p className="text-base text-base-content">
+                    <p className="text-base font-medium text-base-content">
                       Drop your image here or click to upload
                     </p>
                     <p className="text-sm text-base-content/60">Supports JPG, PNG, WebP up to 10MB</p>
@@ -129,10 +136,11 @@ export default function WatermarkPage() {
 
             {/* Settings */}
             {file && (
-              <>
-                <div className="mb-3">
-                  <label className="block mb-1 font-medium flex items-center">
-                    <TypeIcon className="w-4 h-4 mr-2 text-secondary" /> Watermark Text
+              <div className="flex flex-col gap-4 mt-4">
+                <div>
+                  <label className=" mb-1 font-medium flex items-center gap-2">
+                    <TypeIcon className="w-4 h-4 text-secondary" />
+                    Watermark Text
                   </label>
                   <input
                     className="input input-bordered w-full"
@@ -142,10 +150,11 @@ export default function WatermarkPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block mb-1 font-medium flex items-center">
-                      <PaletteIcon className="w-4 h-4 mr-2 text-accent" /> Color
+                    <label className="mb-1 font-medium flex items-center gap-2">
+                      <PaletteIcon className="w-4 h-4 text-accent" />
+                      Color
                     </label>
                     <input
                       type="color"
@@ -165,7 +174,7 @@ export default function WatermarkPage() {
                   </div>
                 </div>
 
-                <div className="mb-4">
+                <div>
                   <label className="block mb-1 font-medium">Position</label>
                   <select
                     className="select select-bordered w-full"
@@ -187,28 +196,26 @@ export default function WatermarkPage() {
                 >
                   {loading ? "Applying..." : "Apply Watermark"}
                 </button>
-              </>
+              </div>
             )}
-          </div>
+          </section>
 
           {/* Preview + Download */}
-          <div className="bg-base-100/90 backdrop-blur-md rounded-2xl shadow-xl border border-base-300/30 p-6 flex flex-col">
-            <div className="flex items-center mb-4">
-              <DownloadIcon className="w-6 h-6 text-accent mr-2" />
+          <section className="bg-base-100/90 backdrop-blur-md rounded-2xl shadow-xl border border-base-300/30 p-6 flex flex-col gap-6">
+            <div className="flex items-center gap-2">
+              <DownloadIcon className="w-6 h-6 text-accent" />
               <h2 className="text-xl font-semibold text-base-content">Preview & Download</h2>
             </div>
 
             {result ? (
-              <div className="flex flex-col space-y-6 text-center">
-                <div>
-                  <h3 className="font-semibold mb-2">Watermarked Image</h3>
-                  <img
-                    src={result.watermarked}
-                    alt="Watermarked"
-                    ref={imageRef}
-                    className="rounded-xl max-h-80 mx-auto border object-contain shadow-md"
-                  />
-                </div>
+              <div className="flex flex-col gap-4 text-center">
+                <h3 className="font-semibold">Watermarked Image</h3>
+                <img
+                  src={result.watermarked}
+                  alt="Watermarked"
+                  ref={imageRef}
+                  className="rounded-xl max-h-80 mx-auto border object-contain shadow-md"
+                />
                 <button
                   onClick={handleDownload}
                   className="btn btn-accent w-full"
@@ -224,18 +231,18 @@ export default function WatermarkPage() {
                   alt="Preview"
                   className="rounded-xl max-h-80 mx-auto border object-contain shadow-md"
                 />
-                <p className="mt-2 text-base-content/60 text-sm">
+                <p className="mt-3 text-sm text-base-content/60">
                   Preview before applying watermark
                 </p>
               </div>
             ) : (
-              <div className="text-center py-16 text-base-content/60">
-                <LayersIcon className="w-16 h-16 mx-auto mb-4" />
+              <div className="text-center py-13 text-base-content/60 space-y-2">
+                <LayersIcon className="w-16 h-10 mx-auto" />
                 <p className="font-medium">No image uploaded yet</p>
                 <p className="text-sm">Upload an image to preview and apply watermark</p>
               </div>
             )}
-          </div>
+          </section>
         </div>
       </div>
     </div>
