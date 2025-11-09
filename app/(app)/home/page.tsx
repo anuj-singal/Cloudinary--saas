@@ -6,6 +6,7 @@ import VideoCard from "@/components/VideoCard";
 import { Video } from "@/types";
 import { useRouter } from "next/navigation";
 import { useUser, SignInButton } from "@clerk/nextjs";
+import { UploadIcon } from "lucide-react";
 
 function Home() {
   const router = useRouter();
@@ -97,13 +98,14 @@ function Home() {
         </div>
 
         {videos.length === 0 ? (
-          <div className="flex flex-col items-center justify-center mt-10 text-blue-600">
+          <div className="flex flex-col items-center justify-center mt-15 text-blue-600">
             <p className="text-lg">No videos yet. Upload one to get started!</p>
             <button
               onClick={() => router.push("/video-upload")}
-              className="btn btn-sm mt-6 btn-accent rounded-full shadow-sm hover:scale-105 transition-transform flex items-center gap-2"
+              className="btn btn-md btn-accent mt-6 rounded-full shadow-sm hover:scale-105 transition-transform flex items-center gap-2"
               title="Go to Video Upload"
             >
+              <UploadIcon className="w-4 h-4" />
               <span>Upload</span>
             </button>
           </div>
