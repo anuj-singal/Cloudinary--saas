@@ -53,42 +53,44 @@ function Home() {
   // 🌀 Loading State
   if (loading)
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        
-        <p className="text-lg text-gray-700 font-semibold">Loading videos...</p>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-semibold text-base-content">
+          Loading videos...
+        </p>
       </div>
     );
 
   // 🚪 Not Signed In
   if (!isSignedIn)
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-gray-50">
-        
-        <h1 className="text-5xl font-bold mb-4 text-gray-800">
-          Welcome to Cloudinary Studio
-        </h1>
-        <p className="text-gray-600 mb-8 text-lg">
-          Please sign in to upload, view and manage your videos.
-        </p>
-        <SignInButton>
-          <button className="btn btn-primary px-6 py-2 text-lg rounded-lg">
-            Sign In
-          </button>
-        </SignInButton>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center text-center max-w-md">
+          <h1 className="text-4xl font-bold mb-4 text-base-content">
+            Welcome to Cloudinary Studio
+          </h1>
+          <p className="text-base-content mb-6">
+            Please sign in to upload, view and manage your videos.
+          </p>
+          <SignInButton>
+            <button className="btn btn-primary px-6 py-2 text-lg rounded-lg">
+              Sign In
+            </button>
+          </SignInButton>
+        </div>
       </div>
     );
 
   // ⚠️ Error State
   if (error)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        {error}
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-semibold text-error">{error}</p>
       </div>
     );
 
   // 🎥 Main Video Grid
   return (
-    <div className="min-h-screen bg-gray-50 overflow-hidden">
+    <div className="min-h-screen bg-base-200 overflow-hidden">
       <div className="flex-1 px-6 py-8">
         <div className="text-center mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-blue-800">Videos</h1>
@@ -97,11 +99,11 @@ function Home() {
         {videos.length === 0 ? (
           <div className="flex flex-col items-center justify-center mt-10 text-blue-600">
             <p className="text-lg">No videos yet. Upload one to get started!</p>
-            {/* Upload Button */}
             <button
               onClick={() => router.push("/video-upload")}
               className="btn btn-sm mt-6 btn-accent rounded-full shadow-sm hover:scale-105 transition-transform flex items-center gap-2"
-              title="Go to Video Upload">
+              title="Go to Video Upload"
+            >
               <span>Upload</span>
             </button>
           </div>
