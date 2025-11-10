@@ -139,7 +139,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
       {/* Content */}
       <div className="p-3 flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm md:text-base font-semibold line-clamp-2 text-gray-900 dark:text-gray-100 ">{video.title}</h3>
+          <h3 className="text-sm md:text-base font-semibold line-clamp-2  text-accent-content ">{video.title}</h3>
           <div className="text-xs font-bold text-white bg-black/70 dark:bg-white/20 dark:text-black px-2 py-0.5 rounded">
             -{compressionPercentage}%
           </div>
