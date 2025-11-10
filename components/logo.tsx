@@ -1,12 +1,18 @@
-// components/logo.tsx
 "use client";
 
 import { motion } from "framer-motion";
 import { Cloud } from "lucide-react";
 
-export default function Logo({ compact = false }: { compact?: boolean }) {
+interface LogoProps {
+  compact?: boolean;
+  className?: string;
+}
+
+export default function Logo({ compact = false, className = "" }: LogoProps) {
   return (
-    <div className="flex items-center gap-3 select-none cursor-pointer">
+    <div
+      className={`flex items-center gap-3 select-none cursor-pointer ${className}`}
+    >
       <motion.div
         initial={{ rotate: 0 }}
         whileHover={{ rotate: 12 }}
