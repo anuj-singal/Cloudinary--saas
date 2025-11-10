@@ -3,7 +3,8 @@ import Logo from "@/components/logo";
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-br from-indigo-950 via-purple-950 to-gray-900 overflow-hidden relative">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-gradient-to-br from-sky-900 via-cyan-900 to-teal-800 overflow-hidden relative">
+
       {/* Decorative gradient orbs */}
       <div className="absolute -top-20 -left-20 w-96 h-96 bg-indigo-700/30 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-pink-700/20 rounded-full blur-3xl animate-pulse"></div>

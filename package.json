@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.34.0",
+    "@lottiefiles/react-lottie-player": "^3.6.0",
     "@prisma/client": "^6.18.0",
     "axios": "^1.13.1",
     "cloudinary": "^2.8.0",
@@ -19,6 +20,7 @@
     "dayjs": "^1.11.18",
     "filesize": "^11.0.13",
     "framer-motion": "^12.23.24",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.540.0",
     "next-cloudinary": "^6.17.0",
     "react": "19.1.0",
