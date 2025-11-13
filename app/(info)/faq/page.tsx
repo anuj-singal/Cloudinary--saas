@@ -32,9 +32,9 @@ const faqs = [
       "Cloudinary Studio supports all common image, video, and document formats, including JPEG, PNG, GIF, MP4, PDF, and more.",
   },
   {
-    question: "Can I collaborate with my team?",
+    question: "Can I preview my images?",
     answer:
-      "Yes! You can invite team members, assign roles, and manage permissions to collaborate seamlessly on projects.",
+      "Yes! You can preview your images after using the tools and before downloading. You can also preview your videos.",
   },
   {
     question: "Does Cloudinary Studio support AI-based transformations?",
