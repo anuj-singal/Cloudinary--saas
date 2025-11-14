@@ -6,8 +6,14 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Cloudinary Studio",
-  description: "Transform videos and images instantly with Cloudinary Studio",
+  description: "Media SaaS",
+  icons: {
+    icon: "/logo.png",       
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
+
 
 export default function RootLayout({
   children,
