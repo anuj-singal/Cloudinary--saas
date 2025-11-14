@@ -168,9 +168,9 @@ export default function DocsPage() {
           <CodeBlock
             id="code1"
             code={`git clone https://github.com/anuj-singal/Cloudinary--saas.git
-cd Cloudinary--saas
-npm install
-npm run dev`}
+            cd Cloudinary--saas
+            npm install
+            npm run dev`}
           />
         </motion.section>
 
@@ -263,12 +263,12 @@ npm run dev`}
           <CodeBlock
             id="code2"
             code={`POST /api/upload
-Authorization: Bearer <token>
+            Authorization: Bearer <token>
 
-{
-  "file": "<base64 or URL>",
-  "transform": "compress"
-}`}
+            {
+              "file": "<base64 or URL>",
+              "transform": "compress"
+            }`}
           />
 
           <p className="mt-3 text-base-content/70 dark:text-neutral-500">

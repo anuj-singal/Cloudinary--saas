@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    // Example: image → webp, or video → mp4/gif
+    // Example: image to webp, or video into mp4/gif
     const url = cloudinary.url(public_id, {
       resource_type: resource_type || "image",
       format: targetFormat,

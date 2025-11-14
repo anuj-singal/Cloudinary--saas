@@ -21,13 +21,13 @@ interface CloudinaryUploadResult {
 }
 
 export async function POST(request: NextRequest) {
-  // ✅ Get user ID from Clerk auth
+  //Get user ID from Clerk auth
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "User is not logged in" }, { status: 401 });
   }
 
-  // ✅ Check Cloudinary credentials
+  //Check Cloudinary credentials
   if (
     !process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
     !process.env.CLOUDINARY_API_KEY ||
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // ✅ Grab the form data from the frontend
+    //Grab the form data from the frontend
     const formData = await request.formData();
 
     const file = formData.get("file") as File | null; // get the uploaded file
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // ✅ Create a buffer from file bytes to stream to Cloudinary
+    //Create a buffer from file bytes to stream to Cloudinary
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       uploadStream.end(buffer);
     });
 
-    // ✅ Store video info in the database using Prisma
+    //Store video info in the database using Prisma
     const video = await prisma.video.create({
       data: {
         title,

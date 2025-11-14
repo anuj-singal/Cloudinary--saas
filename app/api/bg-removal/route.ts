@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // ✅ Only one upload_stream call
+    // Only one upload_stream call
     const result: any = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {

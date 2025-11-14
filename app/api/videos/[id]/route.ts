@@ -10,16 +10,15 @@ export async function PATCH(
   { params }: { params: { id: string } } // ✅ proper type
 ) {
   try {
-    // ✅ Destructure id safely
     const videoId = params.id;
 
-    // ✅ Ensure user is logged in
+    //Ensure user is logged in
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ Only allow the owner to update visibility
+    //Only allow the owner to update visibility
     const body = (await req.json()) as { visibility: "private" | "public" };
     const updated = await prisma.video.updateMany({
       where: { id: videoId, userId },
@@ -41,7 +40,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } } // ✅ proper type
+  { params }: { params: { id: string } }
 ) {
   try {
     const videoId = params.id;
@@ -51,7 +50,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ✅ Only owner can delete their video
+    //Only owner can delete their video
     const deleted = await prisma.video.deleteMany({
       where: { id: videoId, userId },
     });

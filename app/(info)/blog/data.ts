@@ -1,4 +1,3 @@
-// app/(info)/blog/data.ts
 export const blogs = [
   {
     id: 1,
