@@ -94,10 +94,15 @@ export default function SupportPage() {
         </div>
       </div>
 
-      {/* FOOTNOTE */}
-      <p className="text-sm text-base-content/60 mt-12 text-center">
-        © {new Date().getFullYear()} Cloudinary Studio — All rights reserved.
-      </p>
+      <div className="mt-16 text-center">
+        <Link
+          href="/"
+          className="inline-block px-8 py-3 rounded-full font-semibold shadow-md transition-transform duration-300 hover:scale-105 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white"
+        >
+          Back to Dashboard
+        </Link>
+      </div>
+      
     </div>
   );
 }

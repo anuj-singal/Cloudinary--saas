@@ -76,7 +76,7 @@ export default function FaqPage() {
           >
             <button
               onClick={() => toggleFaq(index)}
-              className="w-full flex justify-between items-center text-left font-semibold text-lg hover:text-primary transition-colors duration-200"
+              className="w-full text-base-content flex justify-between items-center text-left font-semibold text-lg hover:text-primary transition-colors duration-200"
             >
               {faq.question}
               {openIndex === index ? (
@@ -132,7 +132,7 @@ export default function FaqPage() {
           href="/"
           className="inline-block px-8 py-3 rounded-full font-semibold shadow-md transition-transform duration-300 hover:scale-105 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 text-white"
         >
-          Back to Home
+          Back to Dashboard
         </Link>
       </div>
     </div>

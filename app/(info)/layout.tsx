@@ -60,7 +60,7 @@ export default function InfoLayout({ children }: { children: React.ReactNode }) 
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3 py-2 rounded-md font-medium text-sm text-base-content hover:bg-base-300 hover:text-primary transition-all"
+                className="px-3 border-1 py-2  rounded-md font-medium text-sm text-base-content hover:bg-base-300 hover:text-primary transition-all"
               >
                 {link.label}
               </Link>
@@ -69,7 +69,7 @@ export default function InfoLayout({ children }: { children: React.ReactNode }) 
             {/* Home + Dashboard buttons */}
             <Link
               href="/home"
-              className="px-3 py-1.5 rounded-lg bg-base-300 hover:bg-base-200 text-base-content flex items-center gap-2 text-sm font-medium transition-colors"
+              className="px-3 py-1.5 border-1 rounded-lg bg-base-300 hover:bg-base-200 text-base-content flex items-center gap-2 text-sm font-medium transition-colors"
             >
               <HomeIcon className="w-4 h-4" /> Home
             </Link>

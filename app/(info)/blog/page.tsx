@@ -81,7 +81,7 @@ export default function BlogPage() {
                 </div>
 
                 {/* Title + Description */}
-                <h2 className="text-base font-bold mb-1 line-clamp-2">
+                <h2 className="text-base-content font-bold mb-1 line-clamp-2">
                   {blog.title}
                 </h2>
                 <p className="text-base-content/70 text-xs leading-relaxed line-clamp-3">

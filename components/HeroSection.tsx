@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { Cloud } from "lucide-react";
 
 export default function HeroSection() {
   return (
@@ -25,7 +26,21 @@ export default function HeroSection() {
       <div className="absolute bottom-0 right-10 w-[400px] h-[400px] bg-purple-600/20 blur-[120px] rounded-full animate-pulse" />
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center text-center px-6">
+      <div className="relative z-10 flex flex-col items-center text-center px-9">
+        <div
+      className={`flex items-center gap-4 select-none cursor-pointer`}
+    >
+        <motion.div
+        initial={{ rotate: 0 }}
+        whileHover={{ rotate: 12 }}
+        transition={{ type: "spring", stiffness: 220, damping: 14 }}
+        className="rounded-full p-1"
+        aria-hidden
+      >
+        <Cloud className="w-15 h-25 text-sky-500" />
+      </motion.div>
+
+
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -34,6 +49,8 @@ export default function HeroSection() {
         >
           Cloudinary Studio
         </motion.h1>
+
+        </div>
 
         <motion.p
           initial={{ opacity: 0, y: 40 }}

@@ -93,12 +93,13 @@ const VideoCard: React.FC<VideoCardProps> = ({
 
   return (
     <div
-      className="group relative rounded-2xl shadow-md overflow-hidden border transition-transform duration-300 hover:-translate-y-1
-        bg-base-100 dark:bg-base-900 border-base-300 dark:border-base-700"
+      className="group relative rounded-2xl shadow-md overflow-hidden border-[1.5px]
+      transition-transform duration-300 hover:-translate-y-1
+      bg-base-100 dark:bg-base-900 
+      border-gray-300 dark:border-gray-700"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-
       {/* Video Preview */}
       <div className="relative aspect-video rounded-t-xl overflow-hidden">
         {isHovered ? (
@@ -139,7 +140,14 @@ const VideoCard: React.FC<VideoCardProps> = ({
       {/* Content */}
       <div className="p-3 flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm md:text-base font-semibold line-clamp-2  text-accent-content ">{video.title}</h3>
+          <h3
+            className="text-sm md:text-base font-semibold line-clamp-2 text-accent-content
+            transition-all duration-300 ease-in-out 
+            group-hover:text-primary group-hover:translate-x-[2px] group-hover:opacity-90"
+          >
+            {video.title}
+          </h3>
+
           <div className="text-xs font-bold text-white bg-black/70 dark:bg-white/20 dark:text-black px-2 py-0.5 rounded">
             -{compressionPercentage}%
           </div>
@@ -149,14 +157,27 @@ const VideoCard: React.FC<VideoCardProps> = ({
         <p className="text-[11px] text-gray-400 dark:text-gray-400">{dayjs(video.createdAt).fromNow()}</p>
 
         <div className="grid grid-cols-2 gap-2 mt-2">
-          <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 rounded px-2 py-1 text-xs border border-black/20 dark:border-white/20">
+          <div
+            className="flex items-center justify-between 
+            bg-gray-100 dark:bg-gray-800/60 
+            rounded px-2 py-1 text-xs 
+            border border-gray-300 dark:border-gray-600 
+            transition-colors duration-300"
+          >
             <div className="flex items-center gap-1">
               <FileUp size={12} className="text-primary" />
               Original
             </div>
             <span className="font-semibold">{formatSize(Number(video.originalSize))}</span>
           </div>
-          <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 rounded px-2 py-1 text-xs border border-black/20 dark:border-white/20">
+
+          <div
+            className="flex items-center justify-between 
+            bg-gray-100 dark:bg-gray-800/60 
+            rounded  px-2 py-1 text-xs 
+            border border-gray-300 dark:border-gray-600 
+            transition-colors duration-300"
+          >
             <div className="flex items-center gap-1">
               <FileDown size={12} className="text-secondary" />
               Compressed
@@ -165,7 +186,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
           </div>
         </div>
 
-        {isOwner || video.visibility === "public" ? (
+        {(isOwner || video.visibility === "public") && (
           <div className="flex gap-2 mt-2 flex-wrap">
             {allowDownload && (
               <button
@@ -175,22 +196,24 @@ const VideoCard: React.FC<VideoCardProps> = ({
                 <Download size={18} /> Download
               </button>
             )}
+
             {isOwner && (
               <>
                 <button
                   className={`btn flex-1 ${visibility === "public" ? "btn-outline" : "btn-accent"} 
-                    dark:btn-outline-dark dark:btn-accent-dark`}
+                  dark:btn-outline-dark dark:btn-accent-dark`}
                   onClick={toggleVisibility}
                 >
                   {visibility === "public" ? "Make Private" : "Make Public"}
                 </button>
+
                 <button className="btn btn-error flex-1 dark:btn-error-dark" onClick={handleDelete}>
                   Delete
                 </button>
-                              </>
+              </>
             )}
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

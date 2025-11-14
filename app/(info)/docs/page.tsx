@@ -72,7 +72,7 @@ export default function DocsPage() {
       </pre>
       <button
         onClick={() => handleCopy(code, id)}
-        className={`absolute top-2 right-2 flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+        className={`absolute text-base-content top-2 right-2 flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
           copied === id
             ? "bg-green-500 text-white shadow-md"
             : "bg-base-100 dark:bg-neutral-800 border border-base-300 dark:border-neutral-700 hover:bg-base-200 dark:hover:bg-neutral-700"
