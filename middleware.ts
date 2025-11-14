@@ -6,7 +6,15 @@ const isPublicRoute = createRouteMatcher([
     "/sign-up",
     "/",
     "/home",
-    "/docs"
+    "/docs",
+    "/pricing",
+    "/about",
+    "/faq",
+    "/blog",
+    "/support",
+    "/blog/ai-powered-uploads",
+    "/blog/saas-dashboard-experience",
+    "/blog/media-optimization-philosophy"
 ])
 
 const isPublicApiRoute = createRouteMatcher([
