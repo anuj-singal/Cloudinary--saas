@@ -23,6 +23,7 @@ import {
   KeyIcon,
 } from "lucide-react";
 
+// --- Sidebar Sections ---
 const sections = [
   { id: "getting-started", label: "Getting Started", icon: <RocketIcon className="w-5 h-5 mr-2 text-primary" /> },
   { id: "image-tools", label: "Image Tools", icon: <ImageIcon className="w-5 h-5 mr-2 text-primary" /> },
@@ -31,33 +32,9 @@ const sections = [
   { id: "advanced", label: "Advanced Integrations", icon: <SettingsIcon className="w-5 h-5 mr-2 text-primary" /> },
 ];
 
-export default function DocsPage() {
-  const [activeSection, setActiveSection] = useState("");
-  const [menuOpen, setMenuOpen] = useState(false);
+// --- CodeBlock Component ---
+const CodeBlock = ({ code, id }: { code: string; id: string }) => {
   const [copied, setCopied] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPos = window.scrollY + 150;
-      for (const sec of sections) {
-        const element = document.getElementById(sec.id);
-        if (element && element.offsetTop <= scrollPos && element.offsetTop + element.offsetHeight > scrollPos) {
-          setActiveSection(sec.id);
-          break;
-        }
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
-      setMenuOpen(false);
-    }
-  };
 
   const handleCopy = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -65,7 +42,7 @@ export default function DocsPage() {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const CodeBlock = ({ code, id }: { code: string; id: string }) => (
+  return (
     <div className="relative bg-base-300 dark:bg-neutral-900 rounded-lg overflow-hidden border border-base-200 dark:border-neutral-700 group">
       <pre className="p-4 overflow-x-auto text-sm leading-relaxed font-mono text-base-content/90 dark:text-neutral-200">
         <code>{code}</code>
@@ -90,6 +67,160 @@ export default function DocsPage() {
       </button>
     </div>
   );
+};
+
+// --- Mobile View Component ---
+const MobileDocsView = () => (
+  <div className="w-full flex justify-center py-6 sm:py-10 lg:hidden">
+    <div className="w-full max-w-4xl bg-base-100 dark:bg-neutral-900 shadow-lg rounded-2xl p-4 sm:p-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-base-content dark:text-neutral-100">
+          Documentation
+        </h1>
+        <p className="text-base sm:text-lg text-base-content/70 dark:text-neutral-400">
+          Learn how to use all features of Cloudinary Studio
+        </p>
+      </div>
+
+      {/* Getting Started */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <RocketIcon size={22} />
+          Getting Started
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6 text-base-content/80 dark:text-neutral-300 space-y-3">
+          <p>1. Sign up with your account using Clerk authentication.</p>
+          <p>2. Upload images or videos from your dashboard.</p>
+          <p>3. Manage visibility, transformations, downloads & more.</p>
+        </div>
+      </section>
+
+      {/* Upload Media */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <ImageIcon size={22} />
+          Upload Media
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6">
+          <p className="text-base-content/80 dark:text-neutral-300 mb-2">
+            Upload JPG, PNG, WEBP, MP4, MOV and more.
+          </p>
+          <CodeBlock
+            id="mobile_code1"
+            code={`POST /api/upload
+
+Body:
+- file: Binary File
+- type: "image" | "video"
+- visibility: "public" | "private"`}
+          />
+        </div>
+      </section>
+
+      {/* Video Processing */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <VideoIcon size={22} />
+          Video Processing
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6 text-base-content/80 dark:text-neutral-300">
+          <p>You can fetch video metadata, generate thumbnails, and perform transformations.</p>
+        </div>
+      </section>
+
+      {/* Transformations */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <PaletteIcon size={22} />
+          Transformations
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6">
+          <CodeBlock
+            id="mobile_code2"
+            code={`GET /api/transform
+?effect=blur
+?resize=500x500
+?quality=80`}
+          />
+        </div>
+      </section>
+
+      {/* API Reference */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <CodeIcon size={22} />
+          API Reference
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6 text-base-content/80 dark:text-neutral-300">
+          <p>Full REST API documentation for developers.</p>
+        </div>
+      </section>
+
+      {/* Security */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <ShieldIcon size={22} />
+          Security
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6 text-base-content/80 dark:text-neutral-300">
+          <p>All private files require user authentication to access.</p>
+        </div>
+      </section>
+
+      {/* Integrations */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <PlugIcon size={22} />
+          Integrations
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6 text-base-content/80 dark:text-neutral-300">
+          <p>Use with React, Next.js, Node, or any backend service.</p>
+        </div>
+      </section>
+
+      {/* Utilities */}
+      <section className="mb-10">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 flex items-center gap-2 text-primary">
+          <ClipboardIcon size={22} />
+          Utilities
+        </h2>
+        <div className="bg-base-200 dark:bg-neutral-800 rounded-xl p-4 sm:p-6 text-base-content/80 dark:text-neutral-300">
+          <p>Quick copy actions and helpful tools included.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+);
+
+// --- Main DocsPage Component ---
+export default function DocsPage() {
+  const [activeSection, setActiveSection] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 150;
+      for (const sec of sections) {
+        const element = document.getElementById(sec.id);
+        if (element && element.offsetTop <= scrollPos && element.offsetTop + element.offsetHeight > scrollPos) {
+          setActiveSection(sec.id);
+          break;
+        }
+      }
+    };
+    if (window.innerWidth >= 1024) {
+      window.addEventListener("scroll", handleScroll);
+    }
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+    }
+  };
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
@@ -98,212 +229,193 @@ export default function DocsPage() {
 
   return (
     <div className="flex min-h-screen bg-base-200 dark:bg-neutral-950 text-base-content dark:text-neutral-100 transition-colors duration-300">
-      {/* SIDEBAR */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-base-100 dark:bg-neutral-900 border-r border-base-300 dark:border-neutral-700 p-6 z-30 transform transition-transform duration-300 ${
-          menuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-primary">Documentation</h2>
-          <button onClick={() => setMenuOpen(false)} className="lg:hidden btn btn-ghost btn-square btn-sm">
-            <XIcon className="w-5 h-5" />
-          </button>
-        </div>
+      {/* MOBILE VIEW */}
+      <MobileDocsView />
 
-        <nav className="space-y-2">
-          {sections.map((sec) => (
-            <button
-              key={sec.id}
-              onClick={() => scrollToSection(sec.id)}
-              className={`flex items-center w-full text-left px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
-                activeSection === sec.id
-                  ? "bg-primary text-primary-content shadow-md"
-                  : "hover:bg-base-200 dark:hover:bg-neutral-800 text-base-content dark:text-neutral-300"
-              }`}
+      {/* DESKTOP VIEW */}
+      <div className="hidden lg:flex flex-1 min-h-screen">
+        {/* SIDEBAR */}
+        <aside className="fixed top-0 left-0 h-full w-64 bg-base-100 dark:bg-neutral-900 border-r border-base-300 dark:border-neutral-700 p-6 z-30">
+          <h2 className="text-xl font-bold text-primary mb-4">Documentation</h2>
+          <nav className="space-y-2">
+            {sections.map((sec) => (
+              <button
+                key={sec.id}
+                onClick={() => scrollToSection(sec.id)}
+                className={`flex items-center w-full text-left px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  activeSection === sec.id
+                    ? "bg-primary text-primary-content shadow-md"
+                    : "hover:bg-base-200 dark:hover:bg-neutral-800 text-base-content dark:text-neutral-300"
+                }`}
+              >
+                {sec.icon}
+                {sec.label}
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        {/* MAIN CONTENT */}
+        <div className="flex-1 lg:ml-64">
+          <main className="px-6 sm:px-10 pt-20 pb-16 space-y-24">
+            {/* GETTING STARTED */}
+            <motion.section
+              id="getting-started"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
             >
-              {sec.icon}
-              {sec.label}
-            </button>
-          ))}
-        </nav>
-      </aside>
+              <div className="flex items-center mb-6">
+                <RocketIcon className="w-6 h-6 mr-3 text-primary" />
+                <h1 className="text-3xl font-bold">Getting Started</h1>
+              </div>
+              <p className="text-base mb-4 leading-relaxed text-base-content/80 dark:text-neutral-400">
+                Cloudinary Studio empowers you to transform, compress, and manage media directly in your browser.
+                Whether you're building a SaaS, portfolio, or automation platform — this is your modern foundation.
+              </p>
+              <h3 className="font-semibold text-lg mt-6 mb-2">Quick Start</h3>
+              <ul className="list-disc pl-6 space-y-2 text-base-content/80 dark:text-neutral-400">
+                <li>Sign in using Clerk authentication.</li>
+                <li>Upload or paste a Cloudinary media URL.</li>
+                <li>Select a transformation tool — Watermark, Compress, Convert, etc.</li>
+                <li>Preview results and download instantly.</li>
+              </ul>
+              <h3 className="font-semibold text-lg mt-6 mb-3">Local Setup</h3>
+              <CodeBlock
+                id="code1"
+                code={`git clone https://github.com/anuj-singal/Cloudinary--saas.git
+cd Cloudinary--saas
+npm install
+npm run dev`}
+              />
+            </motion.section>
 
-      {/* MOBILE MENU BUTTON */}
-      <button onClick={() => setMenuOpen(true)} className="lg:hidden fixed top-4 left-4 z-20 btn btn-ghost btn-square">
-        <MenuIcon className="w-6 h-6" />
-      </button>
+            {/* IMAGE TOOLS */}
+            <motion.section
+              id="image-tools"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
+            >
+              <div className="flex items-center mb-6">
+                <ImageIcon className="w-6 h-6 mr-3 text-primary" />
+                <h2 className="text-3xl font-bold">Image Tools</h2>
+              </div>
+              <p className="mb-4 text-base-content/80 dark:text-neutral-400">
+                Enhance and optimize your images with Cloudinary’s powerful transformation features — directly inside your app.
+              </p>
+              <div className="space-y-5">
+                <div>
+                  <h3 className="flex items-center font-semibold text-lg mb-2">
+                    <ShieldIcon className="w-5 h-5 mr-2 text-primary" /> Watermark
+                  </h3>
+                  <p>Add text or logo overlays to secure your media with adjustable opacity and placement.</p>
+                </div>
+                <div>
+                  <h3 className="flex items-center font-semibold text-lg mb-2">
+                    <PaletteIcon className="w-5 h-5 mr-2 text-primary" /> Filters & Adjustments
+                  </h3>
+                  <p>Apply blur, brightness, contrast, or color tints for visual consistency.</p>
+                </div>
+                <div>
+                  <h3 className="flex items-center font-semibold text-lg mb-2">
+                    <LayersIcon className="w-5 h-5 mr-2 text-primary" /> Background Removal
+                  </h3>
+                  <p>Remove or replace backgrounds automatically using Cloudinary AI.</p>
+                </div>
+              </div>
+            </motion.section>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 lg:ml-64 px-6 sm:px-10 pt-20 pb-16 space-y-24">
-        {/* GETTING STARTED */}
-        <motion.section
-          id="getting-started"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
-        >
-          <div className="flex items-center mb-6">
-            <RocketIcon className="w-6 h-6 mr-3 text-primary" />
-            <h1 className="text-3xl font-bold">Getting Started</h1>
-          </div>
+            {/* VIDEO TOOLS */}
+            <motion.section
+              id="video-tools"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
+            >
+              <div className="flex items-center mb-6">
+                <VideoIcon className="w-6 h-6 mr-3 text-primary" />
+                <h2 className="text-3xl font-bold">Video Tools</h2>
+              </div>
+              <p className="mb-4 text-base-content/80 dark:text-neutral-400">
+                Transform and optimize videos for web performance using Cloudinary’s intelligent video processing APIs.
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-base-content/80 dark:text-neutral-400">
+                <li>Automatic video compression and resizing.</li>
+                <li>Generate thumbnails and short previews dynamically.</li>
+                <li>Convert formats for optimal delivery (MP4, WebM, etc.).</li>
+              </ul>
+            </motion.section>
 
-          <p className="text-base mb-4 leading-relaxed text-base-content/80 dark:text-neutral-400">
-            Cloudinary Studio empowers you to transform, compress, and manage media directly in your browser.
-            Whether you're building a SaaS, portfolio, or automation platform — this is your modern foundation.
-          </p>
+            {/* API REFERENCE */}
+            <motion.section
+              id="api-reference"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
+            >
+              <div className="flex items-center mb-6">
+                <PlugIcon className="w-6 h-6 mr-3 text-primary" />
+                <h2 className="text-3xl font-bold">API Reference</h2>
+              </div>
+              <p className="mb-4 text-base-content/80 dark:text-neutral-400">
+                Integrate programmatically with Cloudinary-SaaS APIs for uploads, transformations, and retrieval.
+              </p>
+              <CodeBlock
+                id="code2"
+                code={`POST /api/upload
+Authorization: Bearer <token>
 
-          <h3 className="font-semibold text-lg mt-6 mb-2">Quick Start</h3>
-          <ul className="list-disc pl-6 space-y-2 text-base-content/80 dark:text-neutral-400">
-            <li>Sign in using Clerk authentication.</li>
-            <li>Upload or paste a Cloudinary media URL.</li>
-            <li>Select a transformation tool — Watermark, Compress, Convert, etc.</li>
-            <li>Preview results and download instantly.</li>
-          </ul>
+{
+  "file": "<base64 or URL>",
+  "transform": "compress"
+}`}
+              />
+              <p className="mt-3 text-base-content/70 dark:text-neutral-500">
+                All routes are secured via Clerk authentication tokens.
+              </p>
+            </motion.section>
 
-          <h3 className="font-semibold text-lg mt-6 mb-3">Local Setup</h3>
-          <CodeBlock
-            id="code1"
-            code={`git clone https://github.com/anuj-singal/Cloudinary--saas.git
-            cd Cloudinary--saas
-            npm install
-            npm run dev`}
-          />
-        </motion.section>
-
-        {/* IMAGE TOOLS */}
-        <motion.section
-          id="image-tools"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
-        >
-          <div className="flex items-center mb-6">
-            <ImageIcon className="w-6 h-6 mr-3 text-primary" />
-            <h2 className="text-3xl font-bold">Image Tools</h2>
-          </div>
-
-          <p className="mb-4 text-base-content/80 dark:text-neutral-400">
-            Enhance and optimize your images with Cloudinary’s powerful transformation features — directly inside your app.
-          </p>
-
-          <div className="space-y-5">
-            <div>
-              <h3 className="flex items-center font-semibold text-lg mb-2">
-                <ShieldIcon className="w-5 h-5 mr-2 text-primary" /> Watermark
-              </h3>
-              <p>Add text or logo overlays to secure your media with adjustable opacity and placement.</p>
-            </div>
-            <div>
-              <h3 className="flex items-center font-semibold text-lg mb-2">
-                <PaletteIcon className="w-5 h-5 mr-2 text-primary" /> Filters & Adjustments
-              </h3>
-              <p>Apply blur, brightness, contrast, or color tints for visual consistency.</p>
-            </div>
-            <div>
-              <h3 className="flex items-center font-semibold text-lg mb-2">
-                <LayersIcon className="w-5 h-5 mr-2 text-primary" /> Background Removal
-              </h3>
-              <p>Remove or replace backgrounds automatically using Cloudinary AI.</p>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* VIDEO TOOLS */}
-        <motion.section
-          id="video-tools"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
-        >
-          <div className="flex items-center mb-6">
-            <VideoIcon className="w-6 h-6 mr-3 text-primary" />
-            <h2 className="text-3xl font-bold">Video Tools</h2>
-          </div>
-
-          <p className="mb-4 text-base-content/80 dark:text-neutral-400">
-            Transform and optimize videos for web performance using Cloudinary’s intelligent video processing APIs.
-          </p>
-
-          <ul className="list-disc pl-6 space-y-2 text-base-content/80 dark:text-neutral-400">
-            <li>Automatic video compression and resizing.</li>
-            <li>Generate thumbnails and short previews dynamically.</li>
-            <li>Convert formats for optimal delivery (MP4, WebM, etc.).</li>
-          </ul>
-        </motion.section>
-
-        {/* API REFERENCE */}
-        <motion.section
-          id="api-reference"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
-        >
-          <div className="flex items-center mb-6">
-            <PlugIcon className="w-6 h-6 mr-3 text-primary" />
-            <h2 className="text-3xl font-bold">API Reference</h2>
-          </div>
-
-          <p className="mb-4 text-base-content/80 dark:text-neutral-400">
-            Integrate programmatically with Cloudinary-SaaS APIs for uploads, transformations, and retrieval.
-          </p>
-
-          <CodeBlock
-            id="code2"
-            code={`POST /api/upload
-            Authorization: Bearer <token>
-
-            {
-              "file": "<base64 or URL>",
-              "transform": "compress"
-            }`}
-          />
-
-          <p className="mt-3 text-base-content/70 dark:text-neutral-500">
-            All routes are secured via Clerk authentication tokens.
-          </p>
-        </motion.section>
-
-        {/* ADVANCED INTEGRATIONS */}
-        <motion.section
-          id="advanced"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
-        >
-          <div className="flex items-center mb-6">
-            <SettingsIcon className="w-6 h-6 mr-3 text-primary" />
-            <h2 className="text-3xl font-bold">Advanced Integrations</h2>
-          </div>
-
-          <p className="mb-4 text-base-content/80 dark:text-neutral-400">
-            Extend the functionality with additional integrations and backend logic.
-          </p>
-
-          <ul className="space-y-3 text-base-content/80 dark:text-neutral-400">
-            <li className="flex items-center gap-2"><DatabaseIcon className="w-5 h-5 text-primary" /> Prisma ORM for database management.</li>
-            <li className="flex items-center gap-2"><NetworkIcon className="w-5 h-5 text-primary" /> Webhooks for Cloudinary upload callbacks.</li>
-            <li className="flex items-center gap-2"><ServerIcon className="w-5 h-5 text-primary" /> Next.js API routes for custom transformations.</li>
-            <li className="flex items-center gap-2"><CloudIcon className="w-5 h-5 text-primary" /> Cloudinary Admin API for media automation.</li>
-            <li className="flex items-center gap-2"><KeyIcon className="w-5 h-5 text-primary" /> Secure environment variables & key handling.</li>
-          </ul>
-        </motion.section>
-      </main>
+            {/* ADVANCED INTEGRATIONS */}
+            <motion.section
+              id="advanced"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="scroll-mt-24 border border-base-300 dark:border-neutral-700 rounded-2xl p-8 bg-base-100 dark:bg-neutral-900 shadow-sm"
+            >
+              <div className="flex items-center mb-6">
+                <SettingsIcon className="w-6 h-6 mr-3 text-primary" />
+                <h2 className="text-3xl font-bold">Advanced Integrations</h2>
+              </div>
+              <p className="mb-4 text-base-content/80 dark:text-neutral-400">
+                Extend the functionality with additional integrations and backend logic.
+              </p>
+              <ul className="space-y-3 text-base-content/80 dark:text-neutral-400">
+                <li className="flex items-center gap-2"><DatabaseIcon className="w-5 h-5 text-primary" /> Prisma ORM for database management.</li>
+                <li className="flex items-center gap-2"><NetworkIcon className="w-5 h-5 text-primary" /> Webhooks for Cloudinary upload callbacks.</li>
+                <li className="flex items-center gap-2"><ServerIcon className="w-5 h-5 text-primary" /> Next.js API routes for custom transformations.</li>
+                <li className="flex items-center gap-2"><CloudIcon className="w-5 h-5 text-primary" /> Cloudinary Admin API for media automation.</li>
+                <li className="flex items-center gap-2"><KeyIcon className="w-5 h-5 text-primary" /> Secure environment variables & key handling.</li>
+              </ul>
+            </motion.section>
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
