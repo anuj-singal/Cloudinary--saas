@@ -86,13 +86,22 @@ export default function BgRemovalPage() {
     }
   };
 
-  const handleDownload = () => {
-    if (!processedUrl) return;
-    const link = document.createElement("a");
-    link.href = processedUrl;
-    link.download = "background-removed.png";
-    link.click();
-  };
+    const handleDownload = () => {
+      if (!processedUrl) return;
+
+      fetch(processedUrl)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `processed-image.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        });
+    };
 
   const selectedRgb = hexToRgb(isTransparent ? "transparent" : bgColor);
 
