@@ -16,7 +16,7 @@ export default function HomePage() {
       <FeaturesSection />
 
       {/* CTA Section */}
-      <section className="relative bg-gradient-to-r from-cyan-800 via-blue-900 to-purple-900 py-30 px-6 text-center">
+      <section className="relative bg-gradient-to-r from-cyan-800 via-blue-900 to-purple-900 py-33 px-6 text-center">
         <motion.h2
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
